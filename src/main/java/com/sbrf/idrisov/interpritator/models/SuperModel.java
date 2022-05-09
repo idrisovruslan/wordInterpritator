@@ -1,13 +1,15 @@
 package com.sbrf.idrisov.interpritator.models;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
+@Getter
 public class SuperModel {
+
+    Map<String, String> pathToValue = new HashMap<>();
 
     @SneakyThrows
     public Object getValueFromPath(String path) {
@@ -35,6 +37,6 @@ public class SuperModel {
             }
         }
 
-        throw new RuntimeException("неверный путь");
+        throw new RuntimeException("неверный путь " + variablesNamesList.get(0));
     }
 }

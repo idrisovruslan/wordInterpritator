@@ -18,4 +18,6 @@ public class ClientSigner extends SuperModel {
     String firstName;
     @XmlElement()
     String middleName;
+    @XmlElement()
+    String mgmtCmpnyFullName;
 }

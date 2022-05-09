@@ -17,6 +17,7 @@
         <lastName>lastNameValue</lastName>
         <firstName>firstNameValue</firstName>
         <middleName>middleNameValue</middleName>
+        <mgmtCmpnyFullName>mgmtCmpnyFullNameValue</mgmtCmpnyFullName>
     </ClientSigner>
 
     <redakciya>
