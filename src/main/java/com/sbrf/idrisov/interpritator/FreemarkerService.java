@@ -22,11 +22,18 @@ public class FreemarkerService {
 
         for (int i = 0; i < bodyElements.size(); i++) {
             if (bodyElements.get(i) instanceof XWPFParagraph) {
-                transformParagraph(model, (XWPFParagraph) bodyElements.get(i));
+                XWPFParagraph paragraph = (XWPFParagraph) bodyElements.get(i);
+
+                replaceVariables(model, paragraph);
+                transformParagraph(model, paragraph);
             } else {
                 //TODO РЕАЛИЗУЙ ТАБЛИЦЫ БЛЕАТЬ!
             }
         }
+    }
+
+    private void replaceVariables(Map<String, Object> model, XWPFParagraph paragraph) {
+
     }
 
     private void transformParagraph(Map<String, Object> model, XWPFParagraph paragraph) {
@@ -35,7 +42,6 @@ public class FreemarkerService {
         List<XWPFRun> runs = paragraph.getRuns();
         Deque<Integer> toRemove = new LinkedList<>();
 
-        runs.get(0).getColor();
         runs.get(0).getTextHightlightColor();
 
         for (int i = 0; i < runs.size(); i++) {

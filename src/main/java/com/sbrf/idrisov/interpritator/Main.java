@@ -1,5 +1,6 @@
 package com.sbrf.idrisov.interpritator;
 
+import com.sbrf.idrisov.interpritator.models.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

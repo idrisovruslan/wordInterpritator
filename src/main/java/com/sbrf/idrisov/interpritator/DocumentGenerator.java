@@ -1,5 +1,6 @@
 package com.sbrf.idrisov.interpritator;
 
+import com.sbrf.idrisov.interpritator.models.Model;
 import lombok.SneakyThrows;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class DocumentGenerator {
             Map<String, Object> objectMap = new HashMap<>();
             objectMap.put("model", model);
 
-            //freemarkerService.transformDocument(objectMap, document);
+            freemarkerService.transformDocument(objectMap, document);
 
             document.write(out);
         }
