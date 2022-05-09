@@ -1,24 +1,24 @@
 <model>
-    <Product>
-        <Requisites>
-            <Number>112233</Number>
-        </Requisites>
+    <product>
+        <requisites>
+            <number>112233</number>
+        </requisites>
         <agreementLocation>Москва</agreementLocation>
-    </Product>
+    </product>
 
-    <Participant>
+    <participant>
         <participantType>UL</participantType>
         <fullName>fullNameVal</fullName>
-    </Participant>
+    </participant>
 
-    <ClientSigner>
+    <clientSigner>
         <eioType>управляющий</eioType>
         <position>positionValue</position>
         <lastName>lastNameValue</lastName>
         <firstName>firstNameValue</firstName>
         <middleName>middleNameValue</middleName>
         <mgmtCmpnyFullName>mgmtCmpnyFullNameValue</mgmtCmpnyFullName>
-    </ClientSigner>
+    </clientSigner>
 
     <redakciya>
         <date>dateValue</date>

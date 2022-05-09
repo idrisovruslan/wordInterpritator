@@ -5,10 +5,10 @@ import lombok.Getter;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "Product")
+@XmlRootElement(name = "product")
 @Getter
 public class Product extends SuperModel {
-    @XmlElement(name = "Requisites")
+    @XmlElement
     Requisites requisites;
 
     @XmlElement()

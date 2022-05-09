@@ -32,15 +32,15 @@ public class FreemarkerService {
             if (bodyElements.get(i) instanceof XWPFParagraph) {
                 XWPFParagraph paragraph = (XWPFParagraph) bodyElements.get(i);
 
-                replaceVariables(model, paragraph);
-                //transformParagraph(model, paragraph);
+                replaceVariablesWithValues(model, paragraph);
+                transformParagraph(model, paragraph);
             } else {
                 //TODO РЕАЛИЗУЙ ТАБЛИЦЫ БЛЕАТЬ!
             }
         }
     }
 
-    private void replaceVariables(Map<String, Object> model, XWPFParagraph paragraph) {
+    private void replaceVariablesWithValues(Map<String, Object> model, XWPFParagraph paragraph) {
         Model currentModel = (Model) model.get("model");
 
         String paragraphText = paragraph.getText();
@@ -63,13 +63,12 @@ public class FreemarkerService {
         }
     }
 
+    //TODO первое что пришло в голову, не факт, что работает правильно
     private void transformParagraph(Map<String, Object> model, XWPFParagraph paragraph) {
         String resultText = getProcessedText(paragraph.getText(), model);
         StringBuilder sb = new StringBuilder(resultText);
         List<XWPFRun> runs = paragraph.getRuns();
         Deque<Integer> toRemove = new LinkedList<>();
-
-        runs.get(0).getTextHightlightColor();
 
         for (int i = 0; i < runs.size(); i++) {
             if (sb.indexOf(runs.get(i).text()) == 0) {
@@ -98,11 +97,18 @@ public class FreemarkerService {
         StringTemplateLoader stringTemplateLoader = new StringTemplateLoader();
         stringTemplateLoader.putTemplate("template", templateString);
         configuration.setTemplateLoader(stringTemplateLoader);
-        Template template = configuration.getTemplate("template", "utf-8");
 
         StringWriter stringWriter = new StringWriter();
 
-        template.process(model, stringWriter);
+        Template template;
+        try {
+            template = configuration.getTemplate("template", "utf-8");
+
+            template.process(model, stringWriter);
+        } catch (Exception e) {
+            System.out.println(templateString);
+            throw e;
+        }
 
         return stringWriter.toString();
     }

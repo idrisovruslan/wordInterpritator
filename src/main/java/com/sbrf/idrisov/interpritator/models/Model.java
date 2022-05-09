@@ -12,11 +12,11 @@ import java.io.File;
 @XmlRootElement(name = "model")
 @Getter
 public class Model extends SuperModel {
-    @XmlElement(name = "Product")
+    @XmlElement
     Product product;
-    @XmlElement(name = "Participant")
+    @XmlElement
     Participant participant;
-    @XmlElement(name = "ClientSigner")
+    @XmlElement
     ClientSigner clientSigner;
     @XmlElement()
     Redakciya redakciya;

@@ -11,6 +11,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 
+//TODO проксю запели или что то типа того
 public class ParagraphUtils {
     private ParagraphUtils() {
     }
@@ -39,6 +40,7 @@ public class ParagraphUtils {
             }
 
             beginRun.setText(textInBeginRun, foundTextSegment.getBeginText());
+            beginRun.setTextHighlightColor("none");
 
             // runs between begin run and end run needs to be removed
             for (int runBetween = foundTextSegment.getEndRun() - 1; runBetween > foundTextSegment.getBeginRun(); runBetween--) {

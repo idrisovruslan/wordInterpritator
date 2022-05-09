@@ -86,6 +86,7 @@ public class SquashParagraphsService {
                 break;
             } else {
                 paragraph.getRuns().get(0).setText(firstRunText.substring(1), 0);
+                break;
             }
         }
     }

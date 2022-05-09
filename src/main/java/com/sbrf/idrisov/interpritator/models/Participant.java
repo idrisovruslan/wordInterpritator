@@ -5,7 +5,7 @@ import lombok.Getter;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "Participant")
+@XmlRootElement(name = "participant")
 @Getter
 public class Participant extends SuperModel {
     @XmlElement()
