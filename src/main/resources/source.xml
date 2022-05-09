@@ -1,0 +1,31 @@
+<model>
+    <Product>
+        <Requisites>
+            <Number>112233</Number>
+        </Requisites>
+        <agreementLocation>Москва</agreementLocation>
+    </Product>
+
+    <Participant>
+        <participantType>UL</participantType>
+        <fullName>fullNameVal</fullName>
+    </Participant>
+
+    <ClientSigner>
+        <eioType>управляющий</eioType>
+        <position>positionValue</position>
+        <lastName>lastNameValue</lastName>
+        <firstName>firstNameValue</firstName>
+        <middleName>middleNameValue</middleName>
+    </ClientSigner>
+
+    <redakciya>
+        <date>dateValue</date>
+        <num>numValue</num>
+    </redakciya>
+
+    <documentCode>898989</documentCode>
+    <ipFullName>Имя ИПшника</ipFullName>
+    <shortCompanyName>КОРОТКОЕ ИМЯ КОМПАНИИ</shortCompanyName>
+    <variantUplaty>ежемесячные платежи</variantUplaty>
+</model>
