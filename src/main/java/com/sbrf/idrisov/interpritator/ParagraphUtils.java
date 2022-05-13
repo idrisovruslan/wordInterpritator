@@ -11,9 +11,28 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+
+import static com.sbrf.idrisov.interpritator.RunUtils.isEquals;
+
 //TODO проксю запели или что то типа того
 public class ParagraphUtils {
     private ParagraphUtils() {
+    }
+
+    static public void squashRuns(XWPFParagraph paragraph) {
+        List<XWPFRun> runs = paragraph.getRuns();
+        Deque<Integer> runsToRemove = new LinkedList<>();
+
+        for (int i = runs.size() - 2; i >= 0; i--) {
+            if (isEquals(runs.get(i), runs.get(i + 1))) {
+                runs.get(i).setText(runs.get(i + 1).text());
+                runsToRemove.add(i + 1);
+            }
+        }
+        runsToRemove.forEach(paragraph::removeRun);
     }
 
     //TODO это копипаста с стаковерфлоу(изучить как работает)

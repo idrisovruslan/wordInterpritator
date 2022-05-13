@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.sbrf.idrisov.interpritator.ParagraphUtils.replaceText;
+import static com.sbrf.idrisov.interpritator.ParagraphUtils.squashRuns;
 
 @Service
 public class FreemarkerService {
@@ -32,8 +33,10 @@ public class FreemarkerService {
             if (bodyElements.get(i) instanceof XWPFParagraph) {
                 XWPFParagraph paragraph = (XWPFParagraph) bodyElements.get(i);
 
-                replaceVariablesWithValues(model, paragraph);
-                transformParagraph(model, paragraph);
+                squashRuns(paragraph);
+                //replaceVariablesWithValues(model, paragraph);
+                //transformParagraph(model, paragraph);
+
             } else {
                 //TODO РЕАЛИЗУЙ ТАБЛИЦЫ БЛЕАТЬ!
             }
@@ -68,13 +71,13 @@ public class FreemarkerService {
         String resultText = getProcessedText(paragraph.getText(), model);
         StringBuilder sb = new StringBuilder(resultText);
         List<XWPFRun> runs = paragraph.getRuns();
-        Deque<Integer> toRemove = new LinkedList<>();
+        Deque<Integer> runsToRemove = new LinkedList<>();
 
         for (int i = 0; i < runs.size(); i++) {
             if (sb.indexOf(runs.get(i).text()) == 0) {
                 sb.delete(0, runs.get(i).text().length());
             } else {
-                toRemove.addFirst(i);
+                runsToRemove.addFirst(i);
             }
         }
 
@@ -84,7 +87,7 @@ public class FreemarkerService {
             System.out.println("все хорошо");
         }
 
-        toRemove.forEach(paragraph::removeRun);
+        runsToRemove.forEach(paragraph::removeRun);
     }
 
     @SneakyThrows
