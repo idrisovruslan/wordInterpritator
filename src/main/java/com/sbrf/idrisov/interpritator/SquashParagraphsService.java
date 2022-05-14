@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.sbrf.idrisov.interpritator.RunUtils.removeFirstSymbol;
+
 //TODO Refactor
 @Service
 public class SquashParagraphsService {
@@ -71,23 +73,5 @@ public class SquashParagraphsService {
         newRun.getCTR().setRPr(oldRun.getCTR().getRPr());
         newRun.setText(oldRun.text());
         paragraph.addRun(newRun);
-    }
-
-    private void removeFirstSymbol(XWPFDocument document, int paragraphPos) {
-        XWPFParagraph paragraph = (XWPFParagraph)document.getBodyElements().get(paragraphPos);
-
-        for (int i = 0; i < paragraph.getRuns().size(); i++) {
-            String firstRunText = paragraph.getRuns().get(0).text();
-
-            if (firstRunText.length() == 0) {
-                paragraph.removeRun(0);
-            } else if (firstRunText.length() == 1) {
-                paragraph.removeRun(0);
-                break;
-            } else {
-                paragraph.getRuns().get(0).setText(firstRunText.substring(1), 0);
-                break;
-            }
-        }
     }
 }

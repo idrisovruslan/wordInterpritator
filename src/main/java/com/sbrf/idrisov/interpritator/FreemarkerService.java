@@ -6,8 +6,6 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 import lombok.SneakyThrows;
-import org.apache.poi.xwpf.usermodel.IBodyElement;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.springframework.stereotype.Service;
@@ -21,27 +19,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.sbrf.idrisov.interpritator.ParagraphUtils.replaceText;
-import static com.sbrf.idrisov.interpritator.ParagraphUtils.squashRuns;
 
 @Service
 public class FreemarkerService {
-
-    public void transformDocument(Map<String, Object> model, XWPFDocument document) {
-        List<IBodyElement> bodyElements = document.getBodyElements();
-
-        for (int i = 0; i < bodyElements.size(); i++) {
-            if (bodyElements.get(i) instanceof XWPFParagraph) {
-                XWPFParagraph paragraph = (XWPFParagraph) bodyElements.get(i);
-
-                squashRuns(paragraph);
-                //replaceVariablesWithValues(model, paragraph);
-                //transformParagraph(model, paragraph);
-
-            } else {
-                //TODO РЕАЛИЗУЙ ТАБЛИЦЫ БЛЕАТЬ!
-            }
-        }
-    }
 
     private void replaceVariablesWithValues(Map<String, Object> model, XWPFParagraph paragraph) {
         Model currentModel = (Model) model.get("model");
@@ -67,11 +47,13 @@ public class FreemarkerService {
     }
 
     //TODO первое что пришло в голову, не факт, что работает правильно
-    private void transformParagraph(Map<String, Object> model, XWPFParagraph paragraph) {
+    private void transformParagraph(XWPFParagraph paragraph, Map<String, Object> model) {
         String resultText = getProcessedText(paragraph.getText(), model);
         StringBuilder sb = new StringBuilder(resultText);
         List<XWPFRun> runs = paragraph.getRuns();
         Deque<Integer> runsToRemove = new LinkedList<>();
+
+        String[] resultTextByParagraph = resultText.split("\\n");
 
         for (int i = 0; i < runs.size(); i++) {
             if (sb.indexOf(runs.get(i).text()) == 0) {
@@ -91,7 +73,7 @@ public class FreemarkerService {
     }
 
     @SneakyThrows
-    private String getProcessedText(String templateString, Map<String, Object> model) {
+    public String getProcessedText(String templateString, Map<String, Object> model) {
         Configuration configuration = new Configuration(Configuration.VERSION_2_3_23);
         configuration.setDefaultEncoding("UTF-8");
         configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);

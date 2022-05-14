@@ -25,8 +25,8 @@
         <num>numValue</num>
     </redakciya>
 
-    <documentCode>898989</documentCode>
+    <documentCode>8989891</documentCode>
     <ipFullName>Имя ИПшника</ipFullName>
     <shortCompanyName>КОРОТКОЕ ИМЯ КОМПАНИИ</shortCompanyName>
-    <variantUplaty>ежемесячные платежи</variantUplaty>
+    <variantUplaty>единовременная_уплата_вознаграждения</variantUplaty>
 </model>

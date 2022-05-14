@@ -1,9 +1,6 @@
 package com.sbrf.idrisov.interpritator;
 
-import org.apache.poi.xwpf.usermodel.PositionInParagraph;
-import org.apache.poi.xwpf.usermodel.TextSegment;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.*;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTProofErr;
@@ -33,6 +30,15 @@ public class ParagraphUtils {
             }
         }
         runsToRemove.forEach(paragraph::removeRun);
+    }
+
+    static public boolean isEmptyAfterTransform(XWPFParagraph paragraph, String newText) {
+        return !paragraph.getText().isEmpty() && newText.isEmpty();
+    }
+
+    static public void removeParagraphOnDocument(XWPFParagraph paragraph) {
+        XWPFDocument document = paragraph.getDocument();
+        document.removeBodyElement(document.getPosOfParagraph(paragraph));
     }
 
     //TODO это копипаста с стаковерфлоу(изучить как работает)

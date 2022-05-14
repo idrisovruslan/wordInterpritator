@@ -1,5 +1,6 @@
 package com.sbrf.idrisov.interpritator;
 
+import com.sbrf.idrisov.interpritator.entity.TransformBlock;
 import com.sbrf.idrisov.interpritator.models.Model;
 import lombok.SneakyThrows;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -11,16 +12,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class DocumentGenerator {
 
     @Autowired
-    private FreemarkerService freemarkerService;
-
-    @Autowired
-    private SquashParagraphsService squashParagraphsService;
+    private DocumentToTransformBlockConverter documentToTransformBlockConverter;
 
     @SneakyThrows
     public void generate(Model model, File sourceDocxFile) {
@@ -34,7 +33,11 @@ public class DocumentGenerator {
             Map<String, Object> objectMap = new HashMap<>();
             objectMap.put("model", model);
 
-            freemarkerService.transformDocument(objectMap, document);
+
+            List<TransformBlock> transformBlocks = documentToTransformBlockConverter
+                    .generateBlocksForTransform(document);
+
+            transformBlocks.forEach(transformBlock -> transformBlock.transform(objectMap));
 
             document.write(out);
         }
