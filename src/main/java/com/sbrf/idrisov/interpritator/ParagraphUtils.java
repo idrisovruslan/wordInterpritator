@@ -32,8 +32,8 @@ public class ParagraphUtils {
         runsToRemove.forEach(paragraph::removeRun);
     }
 
-    static public boolean isEmptyAfterTransform(XWPFParagraph paragraph, String newText) {
-        return !paragraph.getText().isEmpty() && newText.isEmpty();
+    static public boolean isEmptyAfterTransform(XWPFParagraph paragraph, List<String> newTexts) {
+        return !paragraph.getText().isEmpty() && (newTexts.isEmpty() || newTexts.stream().allMatch(x -> x.equals("")));
     }
 
     static public void removeParagraphOnDocument(XWPFParagraph paragraph) {

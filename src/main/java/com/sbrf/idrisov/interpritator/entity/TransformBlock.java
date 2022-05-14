@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,19 +28,20 @@ public class TransformBlock {
 
 
     public void transform(Map<String, Object> model) {
-        String blockText = getBlockText();
+        String blockText = getBlockTextWithMeta();
         String processedText = freemarkerService.getProcessedText(blockText, model);
 
         String[] paragraphsText = processedText.split("\\n");
 
-        Map<Integer, String> paragraphsTextByNumsAfterFreemarker = getParagraphsTextWithMeta(paragraphsText);
-
+        Map<Integer, List<String>> paragraphsTextByNumsAfterFreemarker = getParagraphsTextWithMeta(paragraphsText);
+//TODO дальше не работает
         removeEmptyParagraphAfterTransform(paragraphsTextByNumsAfterFreemarker);
 
     }
 
-    private Map<Integer, String> getParagraphsTextWithMeta(String[] paragraphsText) {
-        Map<Integer, String> paragraphMap = new HashMap<>();
+    private Map<Integer, List<String>> getParagraphsTextWithMeta(String[] paragraphsText) {
+        Map<Integer, List<String>> paragraphMap = new HashMap<>();
+        ArrayList<String> tempTexts = new ArrayList<>();
 
         for (int i = 0; i < paragraphsText.length; i++) {
             Pattern pattern = Pattern.compile("\\{MetaInfo: .*}$");
@@ -53,7 +51,17 @@ public class TransformBlock {
                 String meta = matcher.group(0);
                 String result = matcher.replaceFirst("");
 
-                paragraphMap.put(getNumOfParagraph(meta), result);
+                ArrayList<String> texts = new ArrayList<>(tempTexts);
+                tempTexts = new ArrayList<>();
+                texts.add(result);
+                if (paragraphMap.containsKey(getNumOfParagraph(meta))) {
+                    paragraphMap.get(getNumOfParagraph(meta)).addAll(texts);
+                } else {
+                    paragraphMap.put(getNumOfParagraph(meta), texts);
+                }
+            } else {
+                String result = matcher.replaceFirst("");
+                tempTexts.add(result);
             }
 
         }
@@ -70,19 +78,21 @@ public class TransformBlock {
         throw new RuntimeException();
     }
 
-    private void removeEmptyParagraphAfterTransform(Map<Integer, String> paragraphsTextByNumsAfterFreemarker) {
-        List<XWPFParagraph> toRemove = new ArrayList<>();
-
+    private void removeEmptyParagraphAfterTransform(Map<Integer, List<String>> paragraphsTextByNumsAfterFreemarker) {
+        List<XWPFParagraph> toRemoveFromDocument = new ArrayList<>();
+        Deque<Integer> toRemoveFromThis = new LinkedList<>();
         //removeEmptyParagraphWithoutEmptyLines(paragraphsText);
 
         for (int i = 0; i < paragraphsToTransform.size(); i++) {
             XWPFParagraph paragraph = paragraphsToTransform.get(i);
             if (!paragraphsTextByNumsAfterFreemarker.containsKey(i) || isEmptyAfterTransform(paragraph, paragraphsTextByNumsAfterFreemarker.get(i))) {
-                toRemove.add(paragraph);
+                toRemoveFromDocument.add(paragraph);
+                toRemoveFromThis.addFirst(i);
             }
         }
 
-        toRemove.forEach(ParagraphUtils::removeParagraphOnDocument);
+        toRemoveFromThis.forEach(x -> paragraphsToTransform.remove((int)x));
+        toRemoveFromDocument.forEach(ParagraphUtils::removeParagraphOnDocument);
     }
 
     private void removeEmptyParagraphWithoutEmptyLines(String[] paragraphsText) {
@@ -108,7 +118,7 @@ public class TransformBlock {
         isParagraphBlock = true;
     }
 
-    private String getBlockText() {
+    private String getBlockTextWithMeta() {
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < paragraphsToTransform.size(); i++) {
