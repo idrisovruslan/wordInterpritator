@@ -2,8 +2,11 @@ package com.sbrf.idrisov.interpritator.entity;
 
 import com.sbrf.idrisov.interpritator.FreemarkerService;
 import com.sbrf.idrisov.interpritator.ParagraphUtils;
+import com.sbrf.idrisov.interpritator.RunUtils;
 import lombok.Getter;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.xmlbeans.XmlCursor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -33,13 +36,36 @@ public class TransformBlock {
 
         String[] paragraphsText = processedText.split("\\n");
 
-        Map<Integer, List<String>> paragraphsTextByNumsAfterFreemarker = getParagraphsTextWithMeta(paragraphsText);
+        Map<Integer, List<String>> paragraphsTextByNumsAfterFreemarker = getParagraphsTextByNum(paragraphsText);
 //TODO дальше не работает
-        removeEmptyParagraphAfterTransform(paragraphsTextByNumsAfterFreemarker);
+        removeEmptyTextParagraphAfterTransform(paragraphsTextByNumsAfterFreemarker);
 
+        for (int i = 0; i < paragraphsToTransform.size(); i++) {
+            if (paragraphsToTransform.get(i) == null) {
+                continue;
+            }
+            XWPFParagraph paragraph = paragraphsToTransform.get(i);
+            List<String> texts = paragraphsTextByNumsAfterFreemarker.get(i);
+
+
+            for (int j = 0; j < texts.size(); j++) {
+
+                if (j == 0) {
+                    replaceText(paragraph, texts.get(j));
+                }
+
+                //TODO провыерить куда всавит
+                XmlCursor cursor = paragraph.getCTP().newCursor();
+                XWPFParagraph new_par = paragraph.getDocument().insertNewParagraph(cursor);
+                ParagraphUtils.copyPropertiesFromTo(paragraph, new_par);
+                XWPFRun newRun = new_par.createRun();
+                RunUtils.copyPropertiesFromTo(paragraph.getRuns().get(0), newRun);
+                newRun.setText(texts.get(j));
+            }
+        }
     }
 
-    private Map<Integer, List<String>> getParagraphsTextWithMeta(String[] paragraphsText) {
+    private Map<Integer, List<String>> getParagraphsTextByNum(String[] paragraphsText) {
         Map<Integer, List<String>> paragraphMap = new HashMap<>();
         ArrayList<String> tempTexts = new ArrayList<>();
 
@@ -51,6 +77,10 @@ public class TransformBlock {
                 String meta = matcher.group(0);
                 String result = matcher.replaceFirst("");
 
+                if (result.isEmpty()) {
+                    continue;
+                }
+
                 ArrayList<String> texts = new ArrayList<>(tempTexts);
                 tempTexts = new ArrayList<>();
                 texts.add(result);
@@ -61,6 +91,11 @@ public class TransformBlock {
                 }
             } else {
                 String result = matcher.replaceFirst("");
+
+                if (result.isEmpty()) {
+                    continue;
+                }
+
                 tempTexts.add(result);
             }
 
@@ -78,40 +113,22 @@ public class TransformBlock {
         throw new RuntimeException();
     }
 
-    private void removeEmptyParagraphAfterTransform(Map<Integer, List<String>> paragraphsTextByNumsAfterFreemarker) {
+    private void removeEmptyTextParagraphAfterTransform(Map<Integer, List<String>> paragraphsTextByNumsAfterFreemarker) {
         List<XWPFParagraph> toRemoveFromDocument = new ArrayList<>();
         Deque<Integer> toRemoveFromThis = new LinkedList<>();
-        //removeEmptyParagraphWithoutEmptyLines(paragraphsText);
 
         for (int i = 0; i < paragraphsToTransform.size(); i++) {
             XWPFParagraph paragraph = paragraphsToTransform.get(i);
             if (!paragraphsTextByNumsAfterFreemarker.containsKey(i) || isEmptyAfterTransform(paragraph, paragraphsTextByNumsAfterFreemarker.get(i))) {
                 toRemoveFromDocument.add(paragraph);
                 toRemoveFromThis.addFirst(i);
+                paragraphsTextByNumsAfterFreemarker.remove(i);
             }
         }
 
-        toRemoveFromThis.forEach(x -> paragraphsToTransform.remove((int)x));
+        toRemoveFromThis.forEach(x -> paragraphsToTransform.set(x, null));
         toRemoveFromDocument.forEach(ParagraphUtils::removeParagraphOnDocument);
     }
-
-    private void removeEmptyParagraphWithoutEmptyLines(String[] paragraphsText) {
-        boolean remove = false;
-        List<XWPFParagraph> toRemove = new ArrayList<>();
-
-        for (int i = paragraphsToTransform.size() - 2; i > paragraphsText.length; i++) {
-            XWPFParagraph paragraph = paragraphsToTransform.get(i);
-
-            if (paragraph.getText().isEmpty() && !remove) {
-                continue;
-            }
-
-            remove = true;
-            toRemove.add(paragraph);
-        }
-        toRemove.forEach(ParagraphUtils::removeParagraphOnDocument);
-    }
-
 
     public void addNewParagraph(XWPFParagraph paragraph) {
         paragraphsToTransform.add(paragraph);
