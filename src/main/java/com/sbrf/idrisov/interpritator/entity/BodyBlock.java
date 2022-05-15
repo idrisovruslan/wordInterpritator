@@ -2,11 +2,8 @@ package com.sbrf.idrisov.interpritator.entity;
 
 import com.sbrf.idrisov.interpritator.FreemarkerService;
 import com.sbrf.idrisov.interpritator.ParagraphUtils;
-import com.sbrf.idrisov.interpritator.RunUtils;
 import lombok.Getter;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.apache.xmlbeans.XmlCursor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,7 +16,7 @@ import static com.sbrf.idrisov.interpritator.ParagraphUtils.isEmptyAfterTransfor
 
 @Component
 @Scope("prototype")
-public class TransformBlock {
+public class BodyBlock {
 
     @Autowired
     private FreemarkerService freemarkerService;
@@ -36,45 +33,50 @@ public class TransformBlock {
 
         String[] paragraphsText = processedText.split("\\n");
 
-        Map<Integer, List<String>> paragraphsTextByNumsAfterFreemarker = getParagraphsTextByNum(paragraphsText);
-//TODO дальше не работает
+        Map<Integer, List<String>> paragraphsTextByNumsAfterFreemarker = getParagraphsTextsByNumOfParagraphAfterTransform(paragraphsText);
+        //TODO дальше не работает
         removeEmptyTextParagraphAfterTransform(paragraphsTextByNumsAfterFreemarker);
 
-        for (int i = 0; i < paragraphsToTransform.size(); i++) {
-            if (paragraphsToTransform.get(i) == null) {
-                continue;
-            }
-            XWPFParagraph paragraph = paragraphsToTransform.get(i);
-            List<String> texts = paragraphsTextByNumsAfterFreemarker.get(i);
-
-
-            for (int j = 0; j < texts.size(); j++) {
-
-                if (j == 0) {
-                    replaceText(paragraph, texts.get(j));
-                }
-
-                //TODO провыерить куда всавит
-                XmlCursor cursor = paragraph.getCTP().newCursor();
-                XWPFParagraph new_par = paragraph.getDocument().insertNewParagraph(cursor);
-                ParagraphUtils.copyPropertiesFromTo(paragraph, new_par);
-                XWPFRun newRun = new_par.createRun();
-                RunUtils.copyPropertiesFromTo(paragraph.getRuns().get(0), newRun);
-                newRun.setText(texts.get(j));
-            }
-        }
+        System.out.println();
+//        transformBlockParagraphsWithNewText(paragraphsTextByNumsAfterFreemarker);
     }
 
-    private Map<Integer, List<String>> getParagraphsTextByNum(String[] paragraphsText) {
+//    private void transformBlockParagraphsWithNewText(Map<Integer, List<String>> paragraphsTextByNumsAfterFreemarker) {
+//        for (int i = 0; i < paragraphsToTransform.size(); i++) {
+//            if (paragraphsToTransform.get(i) == null) {
+//                continue;
+//            }
+//            XWPFParagraph paragraph = paragraphsToTransform.get(i);
+//            List<String> texts = paragraphsTextByNumsAfterFreemarker.get(i);
+//
+//            for (int j = 0; j < texts.size(); j++) {
+//
+//                if (j == 0) {
+//                    replaceText(paragraph, texts.get(j));
+//                }
+//
+//                //TODO провыерить куда всавит
+//                XmlCursor cursor = paragraph.getCTP().newCursor();
+//                XWPFParagraph new_par = paragraph.getDocument().insertNewParagraph(cursor);
+//                ParagraphUtils.copyPropertiesFromTo(paragraph, new_par);
+//                XWPFRun newRun = new_par.createRun();
+//                RunUtils.copyPropertiesFromTo(paragraph.getRuns().get(0), newRun);
+//                newRun.setText(texts.get(j));
+//            }
+//        }
+//    }
+
+    private Map<Integer, List<String>> getParagraphsTextsByNumOfParagraphAfterTransform(String[] paragraphsText) {
         Map<Integer, List<String>> paragraphMap = new HashMap<>();
         ArrayList<String> tempTexts = new ArrayList<>();
 
         for (int i = 0; i < paragraphsText.length; i++) {
-            Pattern pattern = Pattern.compile("\\{MetaInfo: .*}$");
+            //TODO вынестри объект MetaInfoParagraph
+            Pattern pattern = Pattern.compile("\\{MetaInfoParagraph: .*}$");
             Matcher matcher = pattern.matcher(paragraphsText[i]);
 
             if (matcher.find()) {
-                String meta = matcher.group(0);
+                String metaInfoParagraph = matcher.group(0);
                 String result = matcher.replaceFirst("");
 
                 if (result.isEmpty()) {
@@ -84,12 +86,13 @@ public class TransformBlock {
                 ArrayList<String> texts = new ArrayList<>(tempTexts);
                 tempTexts = new ArrayList<>();
                 texts.add(result);
-                if (paragraphMap.containsKey(getNumOfParagraph(meta))) {
-                    paragraphMap.get(getNumOfParagraph(meta)).addAll(texts);
+                if (paragraphMap.containsKey(getNumOfParagraph(metaInfoParagraph))) {
+                    paragraphMap.get(getNumOfParagraph(metaInfoParagraph)).addAll(texts);
                 } else {
-                    paragraphMap.put(getNumOfParagraph(meta), texts);
+                    paragraphMap.put(getNumOfParagraph(metaInfoParagraph), texts);
                 }
             } else {
+                //Если пусто, значит мета инфы нет(это возможно например при дерективе list) тогда мету берем из следующего пункта с текстом
                 String result = matcher.replaceFirst("");
 
                 if (result.isEmpty()) {
@@ -104,7 +107,7 @@ public class TransformBlock {
     }
 
     private Integer getNumOfParagraph(String meta) {
-        Pattern pattern = Pattern.compile("(?<=\\{MetaInfo: num = )(.*?)(?=\\})");
+        Pattern pattern = Pattern.compile("(?<=\\{MetaInfoParagraph: numOfParagraph = )(.*?)(?=\\})");
         Matcher matcher = pattern.matcher(meta);
 
         if (matcher.find()) {
@@ -126,6 +129,7 @@ public class TransformBlock {
             }
         }
 
+        //не удаляю чтоб сохранить нумирацию
         toRemoveFromThis.forEach(x -> paragraphsToTransform.set(x, null));
         toRemoveFromDocument.forEach(ParagraphUtils::removeParagraphOnDocument);
     }
@@ -142,7 +146,7 @@ public class TransformBlock {
             XWPFParagraph paragraph = paragraphsToTransform.get(i);
             sb.append(paragraph.getText());
 
-            sb.append(String.format("{MetaInfo: num = %d}", i));
+            sb.append(String.format("{MetaInfoParagraph: numOfParagraph = %d}", i));
 
             if (i != paragraphsToTransform.size() - 1) {
                 sb.append("${'\\n'}");

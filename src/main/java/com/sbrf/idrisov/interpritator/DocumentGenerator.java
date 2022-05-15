@@ -1,6 +1,6 @@
 package com.sbrf.idrisov.interpritator;
 
-import com.sbrf.idrisov.interpritator.entity.TransformBlock;
+import com.sbrf.idrisov.interpritator.entity.BodyBlock;
 import com.sbrf.idrisov.interpritator.models.Model;
 import lombok.SneakyThrows;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -19,7 +19,7 @@ import java.util.Map;
 public class DocumentGenerator {
 
     @Autowired
-    private DocumentToTransformBlockConverter documentToTransformBlockConverter;
+    private DocumentToBodyBlockConverter documentToBodyBlockConverter;
 
     @SneakyThrows
     public void generate(Model model, File sourceDocxFile) {
@@ -34,10 +34,10 @@ public class DocumentGenerator {
             objectMap.put("model", model);
 
 
-            List<TransformBlock> transformBlocks = documentToTransformBlockConverter
+            List<BodyBlock> bodyBlocks = documentToBodyBlockConverter
                     .generateBlocksForTransform(document);
 
-            transformBlocks.forEach(transformBlock -> transformBlock.transform(objectMap));
+            bodyBlocks.forEach(bodyBlock -> bodyBlock.transform(objectMap));
 
             document.write(out);
         }

@@ -19,30 +19,30 @@ public class ParagraphUtils {
     private ParagraphUtils() {
     }
 
-    static public void squashRuns(XWPFParagraph paragraph) {
+    public static void squashRuns(XWPFParagraph paragraph) {
         List<XWPFRun> runs = paragraph.getRuns();
         Deque<Integer> runsToRemove = new LinkedList<>();
 
         for (int i = runs.size() - 2; i >= 0; i--) {
             if (isEquals(runs.get(i), runs.get(i + 1))) {
-                runs.get(i).setText(runs.get(i + 1).text());
+                runs.get(i).setText(runs.get(i).text() + runs.get(i + 1).text(), 0);
                 runsToRemove.add(i + 1);
             }
         }
         runsToRemove.forEach(paragraph::removeRun);
     }
 
-    static public boolean isEmptyAfterTransform(XWPFParagraph paragraph, List<String> newTexts) {
+    public static boolean isEmptyAfterTransform(XWPFParagraph paragraph, List<String> newTexts) {
         return !paragraph.getText().isEmpty() && (newTexts.isEmpty() || newTexts.stream().allMatch(x -> x.equals("")));
     }
 
-    static public void removeParagraphOnDocument(XWPFParagraph paragraph) {
+    public static void removeParagraphOnDocument(XWPFParagraph paragraph) {
         XWPFDocument document = paragraph.getDocument();
         document.removeBodyElement(document.getPosOfParagraph(paragraph));
     }
 
     //TODO это копипаста с стаковерфлоу(изучить как работает)
-    static public void replaceText(XWPFParagraph paragraph, String textToFind, String replacement) {
+    public static void replaceText(XWPFParagraph paragraph, String textToFind, String replacement) {
         TextSegment foundTextSegment = null;
         PositionInParagraph startPos = new PositionInParagraph(0, 0, 0);
         while((foundTextSegment = searchText(paragraph, textToFind, startPos)) != null) { // search all text segments having text to find

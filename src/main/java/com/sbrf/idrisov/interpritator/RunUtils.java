@@ -17,7 +17,7 @@ public class RunUtils {
         equals = equals && Objects.equals(run1.getFontName(), run2.getFontName());
         equals = equals && Objects.equals(run1.getFontSizeAsDouble(), run2.getFontSizeAsDouble());
         equals = equals && Objects.equals(run1.isItalic(), run2.isItalic());
-        equals = equals && Objects.equals(run1.getColor(), run2.getColor());
+        //equals = equals && Objects.equals(run1.getColor(), run2.getColor());
 
         equals = equals && Objects.equals(run1.getTextScale(), run2.getTextScale());
         equals = equals && Objects.equals(run1.getTextPosition(), run2.getTextPosition());
