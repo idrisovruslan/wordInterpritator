@@ -3,10 +3,7 @@ package com.sbrf.idrisov.interpritator;
 import org.apache.poi.xwpf.usermodel.*;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTProofErr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -17,6 +14,12 @@ import static com.sbrf.idrisov.interpritator.RunUtils.isEquals;
 //TODO проксю запели или что то типа того
 public class ParagraphUtils {
     private ParagraphUtils() {
+    }
+
+    //TODO не работает
+    public static void copyPropertiesFromTo(XWPFParagraph paragraph, XWPFParagraph new_par) {
+        CTPPr pPr = new_par.getCTP().isSetPPr() ? new_par.getCTP().getPPr() : new_par.getCTP().addNewPPr();
+        pPr.set(paragraph.getCTP().getPPr());
     }
 
     public static void squashRuns(XWPFParagraph paragraph) {
@@ -33,7 +36,11 @@ public class ParagraphUtils {
     }
 
     public static boolean isEmptyAfterTransform(XWPFParagraph paragraph, List<String> newTexts) {
-        return !paragraph.getText().isEmpty() && (newTexts.isEmpty() || newTexts.stream().allMatch(x -> x.equals("")));
+        return !removeRumMetaInfo(paragraph.getText()).isEmpty() && (newTexts.isEmpty() || newTexts.stream().map(ParagraphUtils::removeRumMetaInfo).allMatch(newText -> newText.equals("")));
+    }
+
+    public static String removeRumMetaInfo(String paragraphText) {
+        return paragraphText.replaceAll("\\{MetaInfoRun: .*?}", "");
     }
 
     public static void removeParagraphOnDocument(XWPFParagraph paragraph) {

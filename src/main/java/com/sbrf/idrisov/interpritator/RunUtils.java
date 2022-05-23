@@ -3,12 +3,19 @@ package com.sbrf.idrisov.interpritator;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
 
 import java.util.Objects;
 
 //TODO проксю запели или что то типа того
 public class RunUtils {
     private RunUtils() {
+    }
+
+    //TODO не работает
+    public static void copyPropertiesFromTo(XWPFRun run, XWPFRun new_run) {
+        CTRPr rPr = new_run.getCTR().isSetRPr() ? new_run.getCTR().getRPr() : new_run.getCTR().addNewRPr();
+        rPr.set(run.getCTR().getRPr());
     }
 
     public static boolean isEquals(XWPFRun run1, XWPFRun run2) {

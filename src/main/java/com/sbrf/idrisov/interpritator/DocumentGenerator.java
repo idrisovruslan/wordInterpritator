@@ -21,13 +21,14 @@ public class DocumentGenerator {
     @Autowired
     private DocumentToBodyBlockConverter documentToBodyBlockConverter;
 
+    @Autowired
+    private SquashParagraphsService squashParagraphsService;
+
     @SneakyThrows
     public void generate(Model model, File sourceDocxFile) {
         try (InputStream fileInputStream = new FileInputStream(sourceDocxFile);
              XWPFDocument document = new XWPFDocument(fileInputStream);
              FileOutputStream out = new FileOutputStream("src/main/resources/result.docx")) {
-
-            //squashParagraphsService.squashParagraphs(document);
 
             //TODO И ЭТО НОРМАЛЬНОЕ ЗАПОЛНЕНИЕ МОДЕЛИ БЛЕАТЬ? ВСЕ ТАК ЗАПОЛНЯТЬ БУДЕШЬ?
             Map<String, Object> objectMap = new HashMap<>();
@@ -38,6 +39,8 @@ public class DocumentGenerator {
                     .generateBlocksForTransform(document);
 
             bodyBlocks.forEach(bodyBlock -> bodyBlock.transform(objectMap));
+
+            squashParagraphsService.squashParagraphs(document);
 
             document.write(out);
         }
