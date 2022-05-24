@@ -2,6 +2,7 @@ package com.sbrf.idrisov.interpritator.entity;
 
 import lombok.Getter;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHighlightColor;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -45,6 +46,7 @@ public class RunForTransform {
     }
 
     public void transform() {
+        oldRun.setTextHighlightColor(STHighlightColor.NONE.toString());
         oldRun.setText(text, 0);
     }
 

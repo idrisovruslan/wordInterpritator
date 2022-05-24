@@ -55,6 +55,7 @@ public class ParagraphForTransform {
         textByRunsList.add(new TextByRuns(paragraph, texts.get(texts.size() - 1)));
 
         for (int i = 0; i < texts.size() - 1; i++) {
+            //TODO вынестри объект MetaInfoParagraph
             if (texts.get(i).replaceAll("\\{MetaInfoRun: .*?}$", "").isEmpty()) {
                 continue;
             }
@@ -69,8 +70,6 @@ public class ParagraphForTransform {
             for (XWPFRun runToCopy : runsToCopy) {
                 XWPFRun newRun = new_par.createRun();
                 RunUtils.copyPropertiesFromTo(runToCopy, newRun);
-                //TODO а надо ли, один фиг перезапишим?
-                newRun.setText(runToCopy.text());
             }
 
             textByRunsList.add(new TextByRuns(new_par, texts.get(i)));
