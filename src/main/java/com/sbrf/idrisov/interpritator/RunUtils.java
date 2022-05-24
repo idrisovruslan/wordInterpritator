@@ -12,7 +12,6 @@ public class RunUtils {
     private RunUtils() {
     }
 
-    //TODO не работает
     public static void copyPropertiesFromTo(XWPFRun run, XWPFRun new_run) {
         CTRPr rPr = new_run.getCTR().isSetRPr() ? new_run.getCTR().getRPr() : new_run.getCTR().addNewRPr();
         rPr.set(run.getCTR().getRPr());

@@ -16,7 +16,6 @@ public class ParagraphUtils {
     private ParagraphUtils() {
     }
 
-    //TODO не работает
     public static void copyPropertiesFromTo(XWPFParagraph paragraph, XWPFParagraph new_par) {
         CTPPr pPr = new_par.getCTP().isSetPPr() ? new_par.getCTP().getPPr() : new_par.getCTP().addNewPPr();
         pPr.set(paragraph.getCTP().getPPr());
