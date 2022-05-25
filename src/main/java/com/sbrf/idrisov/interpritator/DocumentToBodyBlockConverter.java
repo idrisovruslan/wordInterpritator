@@ -1,10 +1,9 @@
 package com.sbrf.idrisov.interpritator;
 
-import com.sbrf.idrisov.interpritator.entity.BodyBlock;
-import org.apache.poi.xwpf.usermodel.IBodyElement;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
+import com.sbrf.idrisov.interpritator.entity.RootBlock;
+import com.sbrf.idrisov.interpritator.entity.paragraph.ParagraphsBlock;
+import com.sbrf.idrisov.interpritator.entity.table.TableBlock;
+import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +14,14 @@ import java.util.List;
 public class DocumentToBodyBlockConverter {
 
     @Lookup
-    public BodyBlock getBodyBlock() {
-        return null;
-    }
+    public ParagraphsBlock getParagraphsBlock() {return null;}
 
-    public List<BodyBlock> generateBlocksForTransform(XWPFDocument document) {
+    @Lookup
+    public TableBlock getTableBlock(XWPFTable table) {return null;}
+
+    public List<RootBlock> generateBlocksForTransform(XWPFDocument document) {
         List<IBodyElement> bodyElements = document.getBodyElements();
-        List<BodyBlock> blocksForTransform = new ArrayList<>();
+        List<RootBlock> blocksForTransform = new ArrayList<>();
 
         for (int i = 0; i < bodyElements.size(); i++) {
             if (bodyElements.get(i) instanceof XWPFParagraph) {
@@ -30,20 +30,22 @@ public class DocumentToBodyBlockConverter {
 
                 addMetaInfoForRuns(paragraph);
 
-                if (blocksForTransform.isEmpty() || !blocksForTransform.get(blocksForTransform.size() - 1).isParagraphBlock()) {
-                    BodyBlock bodyBlock = getBodyBlock();
-                    bodyBlock.addNewParagraph(paragraph);
-                    blocksForTransform.add(bodyBlock);
+                if (blocksForTransform.isEmpty() || !(blocksForTransform.get(blocksForTransform.size() - 1) instanceof ParagraphsBlock)) {
+                    ParagraphsBlock paragraphsBlock = getParagraphsBlock();
+                    paragraphsBlock.addNewElement(paragraph);
+                    blocksForTransform.add(paragraphsBlock);
                     continue;
                 }
 
-                BodyBlock bodyBlock = blocksForTransform.get(blocksForTransform.size() - 1);
-                bodyBlock.addNewParagraph(paragraph);
+                ParagraphsBlock paragraphsBlock = (ParagraphsBlock) blocksForTransform.get(blocksForTransform.size() - 1);
+                paragraphsBlock.addNewElement(paragraph);
 
+            } else if (bodyElements.get(i) instanceof XWPFTable){
+                XWPFTable table = (XWPFTable) bodyElements.get(i);
+                TableBlock tableBlock = getTableBlock(table);
+                blocksForTransform.add(tableBlock);
             } else {
-                //TODO РЕАЛИЗУЙ ТАБЛИЦЫ БЛЕАТЬ! а пока пустой блок, чтоб разделить
-                BodyBlock bodyBlock = getBodyBlock();
-                blocksForTransform.add(bodyBlock);
+                throw new RuntimeException();
             }
         }
 

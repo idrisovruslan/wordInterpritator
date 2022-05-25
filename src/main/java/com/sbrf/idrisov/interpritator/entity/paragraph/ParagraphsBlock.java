@@ -1,7 +1,7 @@
-package com.sbrf.idrisov.interpritator.entity;
+package com.sbrf.idrisov.interpritator.entity.paragraph;
 
 import com.sbrf.idrisov.interpritator.FreemarkerService;
-import lombok.Getter;
+import com.sbrf.idrisov.interpritator.entity.RootBlock;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -17,17 +17,14 @@ import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
-public class BodyBlock {
+public class ParagraphsBlock implements RootBlock {
 
     @Autowired
     private FreemarkerService freemarkerService;
 
     private final List<XWPFParagraph> paragraphsToTransform = new ArrayList<>();
 
-    @Getter
-    private boolean isParagraphBlock = false;
-
-
+    @Override
     public void transform(Map<String, Object> model) {
         String blockText = getBlockTextWithMeta();
         String processedText = freemarkerService.getProcessedText(blockText, model);
@@ -39,6 +36,10 @@ public class BodyBlock {
         for (ParagraphForTransform paragraphForTransform : paragraphForTransformList) {
             paragraphForTransform.transform();
         }
+    }
+
+    public void addNewElement(XWPFParagraph paragraph) {
+        paragraphsToTransform.add(paragraph);
     }
 
     private List<ParagraphForTransform> getParagraphsForTransform(String[] paragraphsText) {
@@ -93,11 +94,6 @@ public class BodyBlock {
             return Integer.parseInt(matcher.group(0));
         }
         throw new RuntimeException();
-    }
-
-    public void addNewParagraph(XWPFParagraph paragraph) {
-        paragraphsToTransform.add(paragraph);
-        isParagraphBlock = true;
     }
 
     private String getBlockTextWithMeta() {

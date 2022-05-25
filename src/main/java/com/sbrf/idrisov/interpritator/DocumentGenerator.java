@@ -1,6 +1,6 @@
 package com.sbrf.idrisov.interpritator;
 
-import com.sbrf.idrisov.interpritator.entity.BodyBlock;
+import com.sbrf.idrisov.interpritator.entity.RootBlock;
 import com.sbrf.idrisov.interpritator.models.Model;
 import lombok.SneakyThrows;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -35,10 +35,10 @@ public class DocumentGenerator {
             objectMap.put("model", model);
 
 
-            List<BodyBlock> bodyBlocks = documentToBodyBlockConverter
+            List<RootBlock> paragraphsBlocks = documentToBodyBlockConverter
                     .generateBlocksForTransform(document);
 
-            bodyBlocks.forEach(bodyBlock -> bodyBlock.transform(objectMap));
+            paragraphsBlocks.forEach(paragraphsBlock -> paragraphsBlock.transform(objectMap));
 
             squashParagraphsService.squashParagraphs(document);
 

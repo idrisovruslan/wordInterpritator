@@ -1,4 +1,4 @@
-package com.sbrf.idrisov.interpritator.entity;
+package com.sbrf.idrisov.interpritator.entity.paragraph;
 
 import lombok.Getter;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.sbrf.idrisov.interpritator.entity.RunForTransform.getNumOfRunFromText;
+import static com.sbrf.idrisov.interpritator.entity.paragraph.RunForTransform.getNumOfRunFromText;
 
 @Getter
 public class TextByRuns {

@@ -24,7 +24,7 @@ public class Main implements CommandLineRunner {
 
     public void run(java.lang.String... args) throws Exception {
         Model myModel = Model.getModelFromFile(new File("src/main/resources/source.xml"));
-        File  sourceDocxFile = new File("src/main/resources/romSourceBack2.docx");
+        File  sourceDocxFile = new File("src/main/resources/romSourceBack3.docx");
 
         documentGenerator.generate(myModel, sourceDocxFile);
     }

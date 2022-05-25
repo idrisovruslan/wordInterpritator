@@ -1,4 +1,4 @@
-package com.sbrf.idrisov.interpritator.entity;
+package com.sbrf.idrisov.interpritator.entity.paragraph;
 
 import lombok.Getter;
 import org.apache.poi.xwpf.usermodel.XWPFRun;

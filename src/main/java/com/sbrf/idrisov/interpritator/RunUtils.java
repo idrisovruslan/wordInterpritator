@@ -18,8 +18,8 @@ public class RunUtils {
     }
 
     public static boolean isEquals(XWPFRun run1, XWPFRun run2) {
-        boolean equals = checkTextHighlightColor(run1, run2);
-        equals = equals && Objects.equals(run1.isBold(), run2.isBold());
+        //boolean equals = checkTextHighlightColor(run1, run2);
+        boolean equals = Objects.equals(run1.isBold(), run2.isBold());
         equals = equals && Objects.equals(run1.getFontName(), run2.getFontName());
         equals = equals && Objects.equals(run1.getFontSizeAsDouble(), run2.getFontSizeAsDouble());
         equals = equals && Objects.equals(run1.isItalic(), run2.isItalic());

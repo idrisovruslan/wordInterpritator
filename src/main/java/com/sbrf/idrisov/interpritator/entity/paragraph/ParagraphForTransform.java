@@ -1,4 +1,4 @@
-package com.sbrf.idrisov.interpritator.entity;
+package com.sbrf.idrisov.interpritator.entity.paragraph;
 
 import com.sbrf.idrisov.interpritator.ParagraphUtils;
 import com.sbrf.idrisov.interpritator.RunUtils;
