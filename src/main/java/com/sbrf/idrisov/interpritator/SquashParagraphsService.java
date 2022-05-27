@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.sbrf.idrisov.interpritator.RunUtils.copyPropertiesFromTo;
 import static com.sbrf.idrisov.interpritator.RunUtils.removeFirstSymbol;
 
 //TODO Refactor
@@ -16,7 +17,15 @@ public class SquashParagraphsService {
 
     public void squashParagraphs(XWPFDocument document) {
         List<IBodyElement> bodyElements = document.getBodyElements();
+        squashParagraphs(bodyElements);
+    }
 
+    public void squashParagraphs(XWPFTableCell cell) {
+        List<IBodyElement> bodyElements = cell.getBodyElements();
+        squashParagraphs(bodyElements);
+    }
+
+    private void squashParagraphs(List<IBodyElement> bodyElements) {
         for (int i = bodyElements.size() - 2; i >= 0; i--) {
 
             IBodyElement bodyElement = bodyElements.get(i);
@@ -29,8 +38,8 @@ public class SquashParagraphsService {
                 removeTabs(nextParagraph);
 
                 if (nextParagraph.getText().length() != 0 && nextParagraph.getText().charAt(0) == squashChar) {
-                    addNextParagraphToPrevious(document, i, paragraph, nextParagraph);
-                    removeParagraph(document, i + 1);
+                    addNextParagraphToPrevious(paragraph, nextParagraph);
+                    removeParagraph(paragraph.getDocument(), i + 1);
                 }
 
             } else if (bodyElement instanceof XWPFTable) {
@@ -56,8 +65,8 @@ public class SquashParagraphsService {
         document.removeBodyElement(i);
     }
 
-    private void addNextParagraphToPrevious(XWPFDocument document, int previousParagraphPosition, XWPFParagraph paragraph, XWPFParagraph nextParagraph) {
-        removeFirstSymbol(document, previousParagraphPosition + 1);
+    private void addNextParagraphToPrevious(XWPFParagraph paragraph, XWPFParagraph nextParagraph) {
+        removeFirstSymbol(nextParagraph);
 
         if (nextParagraph.getRuns().isEmpty()) {
             return;
@@ -70,7 +79,7 @@ public class SquashParagraphsService {
 
     private void copyXWPFRun(XWPFParagraph paragraph, XWPFRun oldRun) {
         XWPFRun newRun = paragraph.createRun();
-        newRun.getCTR().setRPr(oldRun.getCTR().getRPr());
+        copyPropertiesFromTo(oldRun, newRun);
         newRun.setText(oldRun.text());
         paragraph.addRun(newRun);
     }

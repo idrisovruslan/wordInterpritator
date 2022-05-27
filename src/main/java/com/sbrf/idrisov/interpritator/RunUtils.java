@@ -1,6 +1,5 @@
 package com.sbrf.idrisov.interpritator;
 
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
@@ -12,8 +11,8 @@ public class RunUtils {
     private RunUtils() {
     }
 
-    public static void copyPropertiesFromTo(XWPFRun run, XWPFRun new_run) {
-        CTRPr rPr = new_run.getCTR().isSetRPr() ? new_run.getCTR().getRPr() : new_run.getCTR().addNewRPr();
+    public static void copyPropertiesFromTo(XWPFRun run, XWPFRun newRun) {
+        CTRPr rPr = newRun.getCTR().isSetRPr() ? newRun.getCTR().getRPr() : newRun.getCTR().addNewRPr();
         rPr.set(run.getCTR().getRPr());
     }
 
@@ -41,12 +40,6 @@ public class RunUtils {
             return Objects.equals(run1.getTextHightlightColor(), run2.getTextHightlightColor());
         }
         return !run1.isHighlighted() && !run2.isHighlighted();
-    }
-
-    public static void removeFirstSymbol(XWPFDocument document, int paragraphPos) {
-        XWPFParagraph paragraph = (XWPFParagraph)document.getBodyElements().get(paragraphPos);
-
-        removeFirstSymbol(paragraph);
     }
 
     public static void removeFirstSymbol(XWPFParagraph paragraph) {

@@ -27,17 +27,19 @@ public class ParagraphForTransform {
         this.textsByRuns = textsByRuns;
     }
 
+    public void transform() {
+        for (TextByRuns textsByRun : textsByRuns) {
+            textsByRun.transform();
+        }
+    }
+
     public static List<ParagraphForTransform> getParagraphForTransformList(Map<Integer, List<String>> paragraphToTextsMap, List<XWPFParagraph> paragraphsToTransform) {
         List<ParagraphForTransform> result = new ArrayList<>();
-
-        if (paragraphToTextsMap.size() != paragraphsToTransform.size()) {
-            throw new RuntimeException();
-        }
 
         for (int i = 0; i < paragraphsToTransform.size(); i++) {
             XWPFParagraph paragraph = paragraphsToTransform.get(i);
 
-            if (isEmptyAfterTransform(paragraph, paragraphToTextsMap.get(i))) {
+            if (!paragraphToTextsMap.containsKey(i) || isEmptyAfterTransform(paragraph, paragraphToTextsMap.get(i))) {
                 ParagraphUtils.removeParagraphOnDocument(paragraph);
                 continue;
             }
@@ -76,12 +78,6 @@ public class ParagraphForTransform {
         }
 
         return textByRunsList;
-    }
-
-    public void transform() {
-        for (TextByRuns textsByRun : textsByRuns) {
-            textsByRun.transform();
-        }
     }
 
     @Override

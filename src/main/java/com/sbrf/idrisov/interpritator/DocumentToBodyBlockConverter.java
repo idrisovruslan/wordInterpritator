@@ -21,6 +21,15 @@ public class DocumentToBodyBlockConverter {
 
     public List<RootBlock> generateBlocksForTransform(XWPFDocument document) {
         List<IBodyElement> bodyElements = document.getBodyElements();
+        return generateBlocksForTransform(bodyElements);
+    }
+
+    public List<RootBlock> generateBlocksForTransform(XWPFTableCell cell) {
+        List<IBodyElement> bodyElements = cell.getBodyElements();
+        return generateBlocksForTransform(bodyElements);
+    }
+
+    private List<RootBlock> generateBlocksForTransform(List<IBodyElement> bodyElements) {
         List<RootBlock> blocksForTransform = new ArrayList<>();
 
         for (int i = 0; i < bodyElements.size(); i++) {
