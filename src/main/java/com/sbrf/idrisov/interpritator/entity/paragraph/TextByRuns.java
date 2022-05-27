@@ -47,11 +47,11 @@ public class TextByRuns {
     }
 
     public void transform() {
-        removeWrongRuns();
+        removeUselessRuns();
         runForTransform.forEach(RunForTransform::transform);
     }
 
-    private void removeWrongRuns() {
+    private void removeUselessRuns() {
         List<XWPFRun> allRuns = paragraph.getRuns();
         Set<Integer> validRunIds = getIdsRun();
 

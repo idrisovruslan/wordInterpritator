@@ -2,18 +2,21 @@ package com.sbrf.idrisov.interpritator.entity.paragraph;
 
 import com.sbrf.idrisov.interpritator.FreemarkerService;
 import com.sbrf.idrisov.interpritator.entity.RootBlock;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static com.sbrf.idrisov.interpritator.ParagraphUtils.getPosOfBodyElement;
+import static com.sbrf.idrisov.interpritator.RunUtils.isEquals;
 
 @Component
 @Scope("prototype")
@@ -22,30 +25,55 @@ public class ParagraphsBlock implements RootBlock {
     @Autowired
     private FreemarkerService freemarkerService;
 
-    private final List<XWPFParagraph> paragraphsToTransform = new ArrayList<>();
+    private final List<XWPFParagraph> paragraphsToTransform;
+
+    public ParagraphsBlock(List<XWPFParagraph> paragraphsToTransform) {
+        this.paragraphsToTransform = paragraphsToTransform;
+    }
 
     @Override
     public void transform(Map<String, Object> model) {
         String blockText = getBlockTextWithMeta();
         String processedText = freemarkerService.getProcessedText(blockText, model);
 
-        String[] paragraphsText = processedText.split("\\n");
+        String[] processedTextByParagraphs = processedText.split("\\n");
 
-        List<ParagraphForTransform> paragraphForTransformList = getParagraphsForTransform(paragraphsText);
+        List<ParagraphForTransform> paragraphForTransformList = getParagraphsForTransform(processedTextByParagraphs);
 
         for (ParagraphForTransform paragraphForTransform : paragraphForTransformList) {
             paragraphForTransform.transform();
         }
     }
 
-    public void addNewElement(XWPFParagraph paragraph) {
-        paragraphsToTransform.add(paragraph);
+    private List<ParagraphForTransform> getParagraphsForTransform(String[] paragraphsText) {
+        List<ParagraphForTransform> result = new ArrayList<>();
+
+        Map<Integer, List<String>> paragraphToTextsMap = parseTextsByParagraphs(paragraphsText);
+
+        for (int i = 0; i < paragraphsToTransform.size(); i++) {
+            XWPFParagraph paragraph = paragraphsToTransform.get(i);
+
+            ParagraphForTransform paragraphForTransform = new ParagraphForTransform(i, paragraph, paragraphToTextsMap.get(i));
+
+            if (!paragraphToTextsMap.containsKey(i) || paragraphForTransform.isEmptyAfterTransform()) {
+                removeParagraphOnDocument(paragraph);
+                continue;
+            }
+
+            result.add(paragraphForTransform);
+        }
+
+        return result;
     }
 
-    private List<ParagraphForTransform> getParagraphsForTransform(String[] paragraphsText) {
-        Map<Integer, List<String>> paragraphToTexts = parseTextsByParagraphs(paragraphsText);
-
-        return ParagraphForTransform.getParagraphForTransformList(paragraphToTexts, paragraphsToTransform);
+    private static void removeParagraphOnDocument(XWPFParagraph paragraph) {
+        if (paragraph.getBody() instanceof XWPFTableCell) {
+            XWPFTableCell cell = (XWPFTableCell) paragraph.getBody();
+            cell.removeParagraph(getPosOfBodyElement(paragraph, cell.getParagraphs()));
+        } else {
+            XWPFDocument document = paragraph.getDocument();
+            document.removeBodyElement(document.getPosOfParagraph(paragraph));
+        }
     }
 
     private Map<Integer, List<String>> parseTextsByParagraphs(String[] paragraphsText) {
@@ -102,6 +130,9 @@ public class ParagraphsBlock implements RootBlock {
         for (int i = 0; i < paragraphsToTransform.size(); i++) {
             XWPFParagraph paragraph = paragraphsToTransform.get(i);
 
+            squashRuns(paragraph);
+            addMetaInfoForRuns(paragraph);
+
             sb.append(paragraph.getText());
 
             sb.append(String.format("{MetaInfoParagraph: numOfParagraph = %d}", i));
@@ -111,5 +142,27 @@ public class ParagraphsBlock implements RootBlock {
             }
         }
         return sb.toString();
+    }
+
+
+    public static void squashRuns(XWPFParagraph paragraph) {
+        List<XWPFRun> runs = paragraph.getRuns();
+        Deque<Integer> runsToRemove = new LinkedList<>();
+
+        for (int i = runs.size() - 2; i >= 0; i--) {
+            if (isEquals(runs.get(i), runs.get(i + 1))) {
+                runs.get(i).setText(runs.get(i).text() + runs.get(i + 1).text(), 0);
+                runsToRemove.add(i + 1);
+            }
+        }
+        runsToRemove.forEach(paragraph::removeRun);
+    }
+
+    private void addMetaInfoForRuns(XWPFParagraph paragraph) {
+        for (int i = 0; i < paragraph.getRuns().size(); i++) {
+            XWPFRun run = paragraph.getRuns().get(i);
+            String metaInfoRun = String.format("{MetaInfoRun: numOfRun = %d}", i);
+            run.setText(run.text() + metaInfoRun, 0);
+        }
     }
 }

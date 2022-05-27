@@ -1,6 +1,6 @@
 package com.sbrf.idrisov.interpritator.entity.table;
 
-import com.sbrf.idrisov.interpritator.entity.RootBlock;
+import com.sbrf.idrisov.interpritator.entity.RootTransform;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -11,7 +11,7 @@ import java.util.Map;
 
 @Component
 @Scope("prototype")
-public class TableForTransform implements RootBlock {
+public class TableForTransform implements RootTransform {
 
     private final XWPFTable table;
 

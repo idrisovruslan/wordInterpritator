@@ -2,18 +2,14 @@ package com.sbrf.idrisov.interpritator.entity.paragraph;
 
 import com.sbrf.idrisov.interpritator.ParagraphUtils;
 import com.sbrf.idrisov.interpritator.RunUtils;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.xmlbeans.XmlCursor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
-import static com.sbrf.idrisov.interpritator.ParagraphUtils.getPosOfBodyElement;
 import static com.sbrf.idrisov.interpritator.ParagraphUtils.removeRumMetaInfo;
 
 public class ParagraphForTransform {
@@ -22,46 +18,34 @@ public class ParagraphForTransform {
 
     private final XWPFParagraph paragraph;
 
-    private final List<TextByRuns> textsByRuns;
+    private final List<String> processedTexts;
 
-    private ParagraphForTransform(int id, XWPFParagraph paragraph, List<TextByRuns> textsByRuns) {
+    public ParagraphForTransform(int id, XWPFParagraph paragraph, List<String> processedTexts) {
         this.id = id;
         this.paragraph = paragraph;
-        this.textsByRuns = textsByRuns;
+        this.processedTexts = processedTexts;
     }
 
     public void transform() {
-        for (TextByRuns textsByRun : textsByRuns) {
+        for (TextByRuns textsByRun : getParagraphsTextsFromRunsMeta()) {
             textsByRun.transform();
         }
     }
 
-    public static List<ParagraphForTransform> getParagraphForTransformList(Map<Integer, List<String>> paragraphToTextsMap, List<XWPFParagraph> paragraphsToTransform) {
-        List<ParagraphForTransform> result = new ArrayList<>();
-
-        for (int i = 0; i < paragraphsToTransform.size(); i++) {
-            XWPFParagraph paragraph = paragraphsToTransform.get(i);
-
-            if (!paragraphToTextsMap.containsKey(i) || isEmptyAfterTransform(paragraph, paragraphToTextsMap.get(i))) {
-                removeParagraphOnDocument(paragraph);
-                continue;
-            }
-
-            result.add(new ParagraphForTransform(i, paragraph, getParagraphsTextsFromRunsMeta(paragraph, paragraphToTextsMap.get(i))));
-        }
-
-        return result;
+    public boolean isEmptyAfterTransform() {
+        return !removeRumMetaInfo(paragraph.getText()).isEmpty() && (processedTexts.isEmpty() ||
+                processedTexts.stream().map(ParagraphUtils::removeRumMetaInfo).allMatch(newText -> newText.equals("")));
     }
-
-    private static List<TextByRuns> getParagraphsTextsFromRunsMeta(XWPFParagraph paragraph, List<String> texts) {
+    
+    private List<TextByRuns> getParagraphsTextsFromRunsMeta() {
         List<TextByRuns> textByRunsList = new ArrayList<>();
 
         //сперва последний ибо XmlCursor(с его помощью инсертим копию параграфа) ставит перед вызывающим параграфом
-        textByRunsList.add(new TextByRuns(paragraph, texts.get(texts.size() - 1)));
+        textByRunsList.add(new TextByRuns(paragraph, processedTexts.get(processedTexts.size() - 1)));
 
-        for (int i = 0; i < texts.size() - 1; i++) {
+        for (int i = 0; i < processedTexts.size() - 1; i++) {
             //TODO вынестри объект MetaInfoParagraph
-            if (texts.get(i).replaceAll("\\{MetaInfoRun: .*?}$", "").isEmpty()) {
+            if (processedTexts.get(i).replaceAll("\\{MetaInfoRun: .*?}$", "").isEmpty()) {
                 continue;
             }
 
@@ -77,25 +61,10 @@ public class ParagraphForTransform {
                 RunUtils.copyPropertiesFromTo(runToCopy, newRun);
             }
 
-            textByRunsList.add(new TextByRuns(new_par, texts.get(i)));
+            textByRunsList.add(new TextByRuns(new_par, processedTexts.get(i)));
         }
 
         return textByRunsList;
-    }
-
-    private static void removeParagraphOnDocument(XWPFParagraph paragraph) {
-        if (paragraph.getBody() instanceof XWPFTableCell) {
-            XWPFTableCell cell = (XWPFTableCell) paragraph.getBody();
-            cell.removeParagraph(getPosOfBodyElement(paragraph, cell.getParagraphs()));
-        } else {
-            XWPFDocument document = paragraph.getDocument();
-            document.removeBodyElement(document.getPosOfParagraph(paragraph));
-        }
-    }
-
-    public static boolean isEmptyAfterTransform(XWPFParagraph paragraph, List<String> newTexts) {
-        return !removeRumMetaInfo(paragraph.getText()).isEmpty() && (newTexts.isEmpty() ||
-                newTexts.stream().map(ParagraphUtils::removeRumMetaInfo).allMatch(newText -> newText.equals("")));
     }
 
     @Override
