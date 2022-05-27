@@ -3,6 +3,7 @@ package com.sbrf.idrisov.interpritator.entity.table;
 import com.sbrf.idrisov.interpritator.DocumentToBodyBlockConverter;
 import com.sbrf.idrisov.interpritator.SquashParagraphsService;
 import com.sbrf.idrisov.interpritator.entity.RootBlock;
+import com.sbrf.idrisov.interpritator.entity.RootTransform;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 @Component
 @Scope("prototype")
-public class CellBlock implements RootBlock {
+public class CellForTransform implements RootTransform {
 
     private final XWPFTableCell cell;
 
@@ -24,7 +25,7 @@ public class CellBlock implements RootBlock {
     private SquashParagraphsService squashParagraphsService;
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public CellBlock(XWPFTableCell cell) {
+    public CellForTransform(XWPFTableCell cell) {
         this.cell = cell;
     }
 

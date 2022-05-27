@@ -2,13 +2,17 @@ package com.sbrf.idrisov.interpritator;
 
 import com.sbrf.idrisov.interpritator.entity.RootBlock;
 import com.sbrf.idrisov.interpritator.entity.paragraph.ParagraphsBlock;
-import com.sbrf.idrisov.interpritator.entity.table.TableBlock;
+import com.sbrf.idrisov.interpritator.entity.table.TableForTransform;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
+
+import static com.sbrf.idrisov.interpritator.RunUtils.isEquals;
 
 @Service
 public class DocumentToBodyBlockConverter {
@@ -17,7 +21,7 @@ public class DocumentToBodyBlockConverter {
     public ParagraphsBlock getParagraphsBlock() {return null;}
 
     @Lookup
-    public TableBlock getTableBlock(XWPFTable table) {return null;}
+    public TableForTransform getTableBlock(XWPFTable table) {return null;}
 
     public List<RootBlock> generateBlocksForTransform(XWPFDocument document) {
         List<IBodyElement> bodyElements = document.getBodyElements();
@@ -35,7 +39,7 @@ public class DocumentToBodyBlockConverter {
         for (int i = 0; i < bodyElements.size(); i++) {
             if (bodyElements.get(i) instanceof XWPFParagraph) {
                 XWPFParagraph paragraph = (XWPFParagraph) bodyElements.get(i);
-                ParagraphUtils.squashRuns(paragraph);
+                squashRuns(paragraph);
 
                 addMetaInfoForRuns(paragraph);
 
@@ -51,14 +55,27 @@ public class DocumentToBodyBlockConverter {
 
             } else if (bodyElements.get(i) instanceof XWPFTable){
                 XWPFTable table = (XWPFTable) bodyElements.get(i);
-                TableBlock tableBlock = getTableBlock(table);
-                blocksForTransform.add(tableBlock);
+                TableForTransform tableForTransform = getTableBlock(table);
+                blocksForTransform.add(tableForTransform);
             } else {
                 throw new RuntimeException();
             }
         }
 
         return blocksForTransform;
+    }
+
+    public static void squashRuns(XWPFParagraph paragraph) {
+        List<XWPFRun> runs = paragraph.getRuns();
+        Deque<Integer> runsToRemove = new LinkedList<>();
+
+        for (int i = runs.size() - 2; i >= 0; i--) {
+            if (isEquals(runs.get(i), runs.get(i + 1))) {
+                runs.get(i).setText(runs.get(i).text() + runs.get(i + 1).text(), 0);
+                runsToRemove.add(i + 1);
+            }
+        }
+        runsToRemove.forEach(paragraph::removeRun);
     }
 
     private void addMetaInfoForRuns(XWPFParagraph paragraph) {

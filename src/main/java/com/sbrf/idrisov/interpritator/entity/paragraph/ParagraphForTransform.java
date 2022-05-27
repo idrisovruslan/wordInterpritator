@@ -2,8 +2,10 @@ package com.sbrf.idrisov.interpritator.entity.paragraph;
 
 import com.sbrf.idrisov.interpritator.ParagraphUtils;
 import com.sbrf.idrisov.interpritator.RunUtils;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.xmlbeans.XmlCursor;
 
 import java.util.ArrayList;
@@ -11,7 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.sbrf.idrisov.interpritator.ParagraphUtils.isEmptyAfterTransform;
+import static com.sbrf.idrisov.interpritator.ParagraphUtils.getPosOfBodyElement;
+import static com.sbrf.idrisov.interpritator.ParagraphUtils.removeRumMetaInfo;
 
 public class ParagraphForTransform {
 
@@ -40,7 +43,7 @@ public class ParagraphForTransform {
             XWPFParagraph paragraph = paragraphsToTransform.get(i);
 
             if (!paragraphToTextsMap.containsKey(i) || isEmptyAfterTransform(paragraph, paragraphToTextsMap.get(i))) {
-                ParagraphUtils.removeParagraphOnDocument(paragraph);
+                removeParagraphOnDocument(paragraph);
                 continue;
             }
 
@@ -78,6 +81,21 @@ public class ParagraphForTransform {
         }
 
         return textByRunsList;
+    }
+
+    private static void removeParagraphOnDocument(XWPFParagraph paragraph) {
+        if (paragraph.getBody() instanceof XWPFTableCell) {
+            XWPFTableCell cell = (XWPFTableCell) paragraph.getBody();
+            cell.removeParagraph(getPosOfBodyElement(paragraph, cell.getParagraphs()));
+        } else {
+            XWPFDocument document = paragraph.getDocument();
+            document.removeBodyElement(document.getPosOfParagraph(paragraph));
+        }
+    }
+
+    public static boolean isEmptyAfterTransform(XWPFParagraph paragraph, List<String> newTexts) {
+        return !removeRumMetaInfo(paragraph.getText()).isEmpty() && (newTexts.isEmpty() ||
+                newTexts.stream().map(ParagraphUtils::removeRumMetaInfo).allMatch(newText -> newText.equals("")));
     }
 
     @Override
