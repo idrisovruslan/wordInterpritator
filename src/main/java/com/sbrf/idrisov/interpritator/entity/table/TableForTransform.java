@@ -1,6 +1,5 @@
 package com.sbrf.idrisov.interpritator.entity.table;
 
-import com.sbrf.idrisov.interpritator.entity.RootTransform;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -11,7 +10,7 @@ import java.util.Map;
 
 @Component
 @Scope("prototype")
-public class TableForTransform implements RootTransform {
+public class TableForTransform {
 
     private final XWPFTable table;
 
@@ -23,7 +22,6 @@ public class TableForTransform implements RootTransform {
     @Lookup
     public RowForTransform getRowBlock(XWPFTableRow row) {return null;}
 
-    @Override
     public void transform(Map<String, Object> model) {
         table.getRows().stream().map(this::getRowBlock).forEach(rowForTransform -> rowForTransform.transform(model));
     }
