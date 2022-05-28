@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,18 +58,20 @@ public class TableForTransform {
 
         List<XWPFTableRow> rows = table.getRows();
 
+        Deque<Integer> rowsToRemove = new LinkedList<>();
+
         for (int i = 0; i < rows.size(); i++) {
             XWPFTableRow row = rows.get(i);
             if (!rowBlockStarted && isMetaRow(row)) {
                 meta = row.getCell(0).getText();
-                table.removeRow(i);
+                rowsToRemove.addFirst(i);
                 rowBlockStarted = true;
                 continue;
             }
 
             if (rowBlockStarted && isMetaRow(row)) {
                 blocks.add(getRowBlock(temp, meta));
-                table.removeRow(i);
+                rowsToRemove.addFirst(i);
 
                 rowBlockStarted = false;
                 temp = new ArrayList<>();
@@ -89,8 +89,11 @@ public class TableForTransform {
                 blocks.add(getRowBlock(temp, meta));
 
                 temp = new ArrayList<>();
+                continue;
             }
+            throw new RuntimeException();
         }
+        rowsToRemove.forEach(table::removeRow);
         return blocks;
     }
 
@@ -134,6 +137,7 @@ public class TableForTransform {
     }
 
     private void removeTable() {
+        //TODO надо удалять следующий параграф тк таблица автоматом генерит параграф после себя и если его не удалить, булет лишний отступ
         if (table.getBody() instanceof XWPFTableCell) {
             XWPFTableCell cell = (XWPFTableCell) table.getBody();
             int pos = getPosOfBodyElement(table, cell.getTables());
