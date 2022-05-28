@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.sbrf.idrisov.interpritator.ParagraphUtils.removeParagraphOnDocument;
 import static com.sbrf.idrisov.interpritator.RunUtils.copyPropertiesFromTo;
 import static com.sbrf.idrisov.interpritator.RunUtils.removeFirstSymbol;
 
@@ -39,7 +40,7 @@ public class SquashParagraphsService {
 
                 if (nextParagraph.getText().length() != 0 && nextParagraph.getText().charAt(0) == squashChar) {
                     addNextParagraphToPrevious(paragraph, nextParagraph);
-                    removeParagraph(paragraph.getDocument(), i + 1);
+                    removeParagraphOnDocument(nextParagraph);
                 }
 
             } else if (bodyElement instanceof XWPFTable) {

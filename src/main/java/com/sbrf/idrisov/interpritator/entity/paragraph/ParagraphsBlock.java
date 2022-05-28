@@ -2,10 +2,8 @@ package com.sbrf.idrisov.interpritator.entity.paragraph;
 
 import com.sbrf.idrisov.interpritator.FreemarkerService;
 import com.sbrf.idrisov.interpritator.entity.RootBlock;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -15,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.sbrf.idrisov.interpritator.ParagraphUtils.getPosOfBodyElement;
+import static com.sbrf.idrisov.interpritator.ParagraphUtils.removeParagraphOnDocument;
 import static com.sbrf.idrisov.interpritator.RunUtils.isEquals;
 
 @Component
@@ -64,16 +62,6 @@ public class ParagraphsBlock implements RootBlock {
         }
 
         return result;
-    }
-
-    private static void removeParagraphOnDocument(XWPFParagraph paragraph) {
-        if (paragraph.getBody() instanceof XWPFTableCell) {
-            XWPFTableCell cell = (XWPFTableCell) paragraph.getBody();
-            cell.removeParagraph(getPosOfBodyElement(paragraph, cell.getParagraphs()));
-        } else {
-            XWPFDocument document = paragraph.getDocument();
-            document.removeBodyElement(document.getPosOfParagraph(paragraph));
-        }
     }
 
     private Map<Integer, List<String>> parseTextsByParagraphs(String[] paragraphsText) {

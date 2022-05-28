@@ -1,7 +1,6 @@
 package com.sbrf.idrisov.interpritator;
 
-import org.apache.poi.xwpf.usermodel.BodyElementType;
-import org.apache.poi.xwpf.usermodel.IBodyElement;
+import org.apache.poi.xwpf.usermodel.*;
 
 import java.util.List;
 
@@ -12,6 +11,16 @@ public class ParagraphUtils {
 
     public static String removeRumMetaInfo(String paragraphText) {
         return paragraphText.replaceAll("\\{MetaInfoRun: .*?}", "");
+    }
+
+    public static void removeParagraphOnDocument(XWPFParagraph paragraph) {
+        if (paragraph.getBody() instanceof XWPFTableCell) {
+            XWPFTableCell cell = (XWPFTableCell) paragraph.getBody();
+            cell.removeParagraph(getPosOfBodyElement(paragraph, cell.getParagraphs()));
+        } else {
+            XWPFDocument document = paragraph.getDocument();
+            document.removeBodyElement(document.getPosOfParagraph(paragraph));
+        }
     }
 
     public static int getPosOfBodyElement(IBodyElement needle, List<? extends IBodyElement> bodyElements) {
