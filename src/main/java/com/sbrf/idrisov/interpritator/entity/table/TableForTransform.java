@@ -60,25 +60,27 @@ public class TableForTransform {
 
         List<XWPFTableRow> rows = table.getRows();
 
-        for (XWPFTableRow row : rows) {
+        for (int i = 0; i < rows.size(); i++) {
+            XWPFTableRow row = rows.get(i);
             if (!rowBlockStarted && isMetaRow(row)) {
                 meta = row.getCell(0).getText();
+                table.removeRow(i);
                 rowBlockStarted = true;
+                continue;
+            }
+
+            if (rowBlockStarted && isMetaRow(row)) {
+                blocks.add(getRowBlock(temp, meta));
+                table.removeRow(i);
+
+                rowBlockStarted = false;
+                temp = new ArrayList<>();
+                meta = "";
                 continue;
             }
 
             if (rowBlockStarted && !isMetaRow(row)) {
                 temp.add(getRowForTransform(row));
-                continue;
-            }
-
-            if (rowBlockStarted && isMetaRow(row)) {
-                temp.add(getRowForTransform(row));
-                blocks.add(getRowBlock(temp, meta));
-
-                rowBlockStarted = false;
-                temp = new ArrayList<>();
-                meta = "";
                 continue;
             }
 
@@ -93,7 +95,19 @@ public class TableForTransform {
     }
 
     private boolean isMetaRow(XWPFTableRow xwpfTableRow) {
+        return isStartMetaRow(xwpfTableRow) || isEndMetaRow(xwpfTableRow);
+    }
+
+    private boolean isStartMetaRow(XWPFTableRow xwpfTableRow) {
+        //TODO  в объект
         Pattern pattern = Pattern.compile("\\{MetaInfoRow: .*?}$");
+        Matcher matcher = pattern.matcher(xwpfTableRow.getCell(0).getText());
+        return matcher.find();
+    }
+
+    private boolean isEndMetaRow(XWPFTableRow xwpfTableRow) {
+        //TODO  в объект
+        Pattern pattern = Pattern.compile("\\{MetaInfoRow}$");
         Matcher matcher = pattern.matcher(xwpfTableRow.getCell(0).getText());
         return matcher.find();
     }
