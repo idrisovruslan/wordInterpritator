@@ -29,4 +29,23 @@
     <ipFullName>Имя ИПшника</ipFullName>
     <shortCompanyName>КОРОТКОЕ ИМЯ КОМПАНИИ</shortCompanyName>
     <variantUplaty>единовременная_уплата_вознаграждения</variantUplaty>
+
+    <listTest>
+        <document>
+            <id>1</id>
+            <name>name1</name>
+        </document>
+        <document>
+            <id>2</id>
+            <name>name2</name>
+        </document>
+        <document>
+            <id>3</id>
+            <name>name3</name>
+        </document>
+        <document>
+            <id>4</id>
+            <name>name4</name>
+        </document>
+    </listTest>
 </model>

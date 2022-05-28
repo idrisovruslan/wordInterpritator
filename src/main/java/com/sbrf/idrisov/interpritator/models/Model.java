@@ -20,6 +20,8 @@ public class Model extends SuperModel {
     ClientSigner clientSigner;
     @XmlElement()
     Redakciya redakciya;
+    @XmlElement()
+    ListTest listTest;
 
     @XmlElement()
     Integer documentCode;
