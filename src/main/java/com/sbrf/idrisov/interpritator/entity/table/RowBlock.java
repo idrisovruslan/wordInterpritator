@@ -15,6 +15,7 @@ import java.util.Map;
 public class RowBlock implements RootBlock {
 
     private final List<RowForTransform> rows;
+    private final String meta;
 
     @Autowired
     private DocumentToBodyBlockConverter documentToBodyBlockConverter;
@@ -23,8 +24,9 @@ public class RowBlock implements RootBlock {
     private SquashParagraphsService squashParagraphsService;
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public RowBlock(List<RowForTransform> rows) {
+    public RowBlock(List<RowForTransform> rows, String meta) {
         this.rows = rows;
+        this.meta = meta;
     }
 
     @Override

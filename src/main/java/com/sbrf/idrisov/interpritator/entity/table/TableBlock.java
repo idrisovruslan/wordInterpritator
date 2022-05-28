@@ -19,7 +19,7 @@ public class TableBlock implements RootBlock {
     private final List<XWPFTable> tables;
 
     @Lookup
-    public TableForTransform getTableForTransform(XWPFTable table) {return null;}
+    public TableForTransform getTableForTransform(XWPFTable table, String meta) {return null;}
 
     @Autowired
     private DocumentToBodyBlockConverter documentToBodyBlockConverter;
@@ -34,6 +34,11 @@ public class TableBlock implements RootBlock {
 
     @Override
     public void transform(Map<String, Object> model) {
-        tables.stream().map(this::getTableForTransform).forEach(tableForTransform -> tableForTransform.transform(model));
+        for (XWPFTable table : tables) {
+            String meta = table.getRow(0).getCell(0).getText();
+            table.removeRow(0);
+            TableForTransform tableForTransform = getTableForTransform(table, meta);
+            tableForTransform.transform(model);
+        }
     }
 }

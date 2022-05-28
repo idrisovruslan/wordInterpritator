@@ -2,19 +2,12 @@ package com.sbrf.idrisov.interpritator;
 
 import org.apache.poi.xwpf.usermodel.BodyElementType;
 import org.apache.poi.xwpf.usermodel.IBodyElement;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
 
 import java.util.List;
 
 //TODO проксю запели или что то типа того
 public class ParagraphUtils {
     private ParagraphUtils() {
-    }
-
-    public static void copyPropertiesFromTo(XWPFParagraph paragraph, XWPFParagraph new_par) {
-        CTPPr pPr = new_par.getCTP().isSetPPr() ? new_par.getCTP().getPPr() : new_par.getCTP().addNewPPr();
-        pPr.set(paragraph.getCTP().getPPr());
     }
 
     public static String removeRumMetaInfo(String paragraphText) {

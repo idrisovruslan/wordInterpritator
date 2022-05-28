@@ -5,6 +5,7 @@ import com.sbrf.idrisov.interpritator.RunUtils;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.xmlbeans.XmlCursor;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class ParagraphForTransform {
             XmlCursor cursor = paragraph.getCTP().newCursor();
 
             XWPFParagraph new_par = paragraph.getDocument().insertNewParagraph(cursor);
-            ParagraphUtils.copyPropertiesFromTo(paragraph, new_par);
+            copyPropertiesFromTo(paragraph, new_par);
 
             List<XWPFRun> runsToCopy = paragraph.getRuns();
 
@@ -65,6 +66,11 @@ public class ParagraphForTransform {
         }
 
         return textByRunsList;
+    }
+
+    public void copyPropertiesFromTo(XWPFParagraph paragraph, XWPFParagraph new_par) {
+        CTPPr pPr = new_par.getCTP().isSetPPr() ? new_par.getCTP().getPPr() : new_par.getCTP().addNewPPr();
+        pPr.set(paragraph.getCTP().getPPr());
     }
 
     @Override
