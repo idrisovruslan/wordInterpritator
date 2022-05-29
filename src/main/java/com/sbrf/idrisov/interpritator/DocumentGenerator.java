@@ -45,5 +45,4 @@ public class DocumentGenerator {
             document.write(out);
         }
     }
-
 }

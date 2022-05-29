@@ -1,8 +1,11 @@
 package com.sbrf.idrisov.interpritator.entity.table;
 
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.apache.xmlbeans.XmlCursor;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRow;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -25,23 +28,46 @@ public class RowForTransform {
     @Lookup
     public CellForTransform getCellForTransform(XWPFTableCell cell) {return null;}
 
+    @Lookup
+    public RowForTransform getRowForTransform(XWPFTableRow row) {return null;}
+
     public void transform(Map<String, Object> model) {
         row.getTableCells().stream().map(this::getCellForTransform).forEach(cellForTransform -> cellForTransform.transform(model));
     }
 
     public void removeRow() {
         XWPFTable table = row.getTable();
-        table.removeRow(getPosOfBodyElement(row, table.getRows()));
+        table.removeRow(getPosOfRow());
     }
 
-    public static int getPosOfBodyElement(XWPFTableRow needle, List<XWPFTableRow> tableRows) {
+    public int getPosOfRow() {
+        List<XWPFTableRow> tableRows = row.getTable().getRows();
         XWPFTableRow current;
         for (int i = 0; i < tableRows.size(); i++) {
             current = tableRows.get(i);
-            if (current.equals(needle)) {
+            if (current.equals(row)) {
                 return i;
             }
         }
         return -1;
     }
+
+    public void addVariablesValue(String value) {
+        row.getTableCells().forEach(xwpfTableCell -> {
+            XmlCursor cursor = xwpfTableCell.getParagraphArray(0).getCTP().newCursor();
+            XWPFParagraph paragraph = xwpfTableCell.insertNewParagraph(cursor);
+            paragraph.createRun().setText(value);
+        });
+    }
+
+    public RowForTransform copyRow(int newPosition) {
+        XWPFTable table = row.getTable();
+
+        XWPFTableRow copiedRow = new XWPFTableRow((CTRow) row.getCtRow().copy(), table);
+
+        table.addRow(copiedRow, newPosition);
+
+        return getRowForTransform(copiedRow);
+    }
+
 }

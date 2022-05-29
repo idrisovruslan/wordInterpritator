@@ -1,13 +1,12 @@
 package com.sbrf.idrisov.interpritator.entity.table;
 
-import com.sbrf.idrisov.interpritator.DocumentToBodyBlockConverter;
 import com.sbrf.idrisov.interpritator.FreemarkerService;
-import com.sbrf.idrisov.interpritator.SquashParagraphsService;
 import com.sbrf.idrisov.interpritator.entity.RootBlock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -19,12 +18,6 @@ public class RowBlock implements RootBlock {
 
     private final List<RowForTransform> rows;
     private final String meta;
-
-    @Autowired
-    private DocumentToBodyBlockConverter documentToBodyBlockConverter;
-
-    @Autowired
-    private SquashParagraphsService squashParagraphsService;
 
     @Autowired
     private FreemarkerService freemarkerService;
@@ -51,15 +44,31 @@ public class RowBlock implements RootBlock {
         } else {
             String[] values = loopCondition.split("\\n");
 
-            for (int i = 1; i < values.length; i++) {
-                RowBlock newRowBlock = cloneRowBlock();
+            for (int i = values.length - 1; i > 0; i--) {
+                RowBlock newRowBlock = copyRowBlockAfterThis();
                 newRowBlock.addValuesToRows(values[i]);
                 newRowBlock.transform(model);
             }
 
             addValuesToRows(values[0]);
-            transform(model);
+            new RowBlock(rows, "").transform(model);
         }
+    }
+
+    private void addValuesToRows(String value) {
+        rows.forEach(rowForTransform -> rowForTransform.addVariablesValue(value));
+    }
+
+    private RowBlock copyRowBlockAfterThis() {
+        List<RowForTransform> newRows = new ArrayList<>();
+
+        int positionAfterThis = rows.get(rows.size() - 1).getPosOfRow() + 1;
+
+        for (int i = rows.size() - 1; i >= 0; i--) {
+            newRows.add(rows.get(i).copyRow(positionAfterThis));
+        }
+
+        return new RowBlock(newRows, "");
     }
 
     private String getProcessedMeta(Map<String, Object> model) {

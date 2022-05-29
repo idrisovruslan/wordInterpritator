@@ -132,7 +132,6 @@ public class ParagraphsBlock implements RootBlock {
         return sb.toString();
     }
 
-
     public static void squashRuns(XWPFParagraph paragraph) {
         List<XWPFRun> runs = paragraph.getRuns();
         Deque<Integer> runsToRemove = new LinkedList<>();
