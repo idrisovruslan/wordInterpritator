@@ -40,7 +40,7 @@ public class ParagraphForTransform {
     
     private List<TextByRuns> getParagraphsTextsFromRunsMeta() {
         List<TextByRuns> textByRunsList = new ArrayList<>();
-
+        //TODO баг если несколько параграфов в цикле, найти способ вставлять после а не перед
         //сперва последний ибо XmlCursor(с его помощью инсертим копию параграфа) ставит перед вызывающим параграфом
         textByRunsList.add(new TextByRuns(paragraph, processedTexts.get(processedTexts.size() - 1)));
 

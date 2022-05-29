@@ -37,37 +37,68 @@ public class RowBlock implements RootBlock {
 
     @Override
     public void transform(Map<String, Object> model) {
-        if (!needToRender(model)) {
+        String processedMeta = getProcessedMeta(model);
+
+        if (!needToRender(processedMeta)) {
             removeRowBlock();
             return;
         }
 
-        rows.forEach(rowForTransform -> rowForTransform.transform(model));
+        String loopCondition = getLoopCondition(processedMeta);
+
+        if (loopCondition.isEmpty()) {
+            rows.forEach(rowForTransform -> rowForTransform.transform(model));
+        } else {
+            String[] values = loopCondition.split("\\n");
+
+            for (int i = 1; i < values.length; i++) {
+                RowBlock newRowBlock = cloneRowBlock();
+                newRowBlock.addValuesToRows(values[i]);
+                newRowBlock.transform(model);
+            }
+
+            addValuesToRows(values[0]);
+            transform(model);
+        }
     }
 
-    private boolean needToRender(Map<String, Object> model) {
-
+    private String getProcessedMeta(Map<String, Object> model) {
         if (meta.isEmpty()) {
+            return "";
+        }
+
+        return freemarkerService.getProcessedText(meta, model);
+    }
+
+    private String getLoopCondition(String processedMeta) {
+        if (processedMeta.isEmpty()) {
+            return "";
+        }
+
+        //TODO  в объект
+        Pattern pattern = Pattern.compile("(?<=loopCondition = )((.|\\n)*?)(?=})");
+        Matcher matcher = pattern.matcher(processedMeta);
+
+        if (matcher.find()) {
+            return matcher.group();
+        }
+        return "";
+    }
+
+    private boolean needToRender(String processedMeta) {
+
+        if (processedMeta.isEmpty()) {
             return true;
         }
 
         //TODO  в объект
-        Pattern pattern = Pattern.compile("\\{MetaInfoRow: .*?}$");
-        Matcher matcher = pattern.matcher(meta);
+        Pattern patternRender = Pattern.compile("(?<=needToRender = )(.*?)(?=}|,)");
+        Matcher matcherRender = patternRender.matcher(processedMeta);
 
-        if (matcher.find()) {
-            String processedMeta = freemarkerService.getProcessedText(matcher.group(), model);
-
-            //TODO  в объект
-            Pattern patternRender = Pattern.compile("(?<=\\{MetaInfoRow: needToRender = )(.*?)(?=\\})");
-            Matcher matcherRender = patternRender.matcher(processedMeta);
-
-            if (matcherRender.find()) {
-                return Boolean.parseBoolean(matcherRender.group());
-            }
-
-            throw new RuntimeException();
+        if (matcherRender.find()) {
+            return Boolean.parseBoolean(matcherRender.group());
         }
+
         throw new RuntimeException();
     }
 
