@@ -5,6 +5,7 @@ import com.sbrf.idrisov.interpritator.SquashParagraphsService;
 import com.sbrf.idrisov.interpritator.entity.RootBlock;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.apache.xmlbeans.impl.values.XmlValueDisconnectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.context.annotation.Scope;
@@ -45,9 +46,13 @@ public class TableBlock implements RootBlock {
     }
 
     private void commitTableRows(XWPFTable table) {
-        int rowNr = 0;
-        for (XWPFTableRow tableRow : table.getRows()) {
-            table.getCTTbl().setTrArray(rowNr++, tableRow.getCtRow());
+        try {
+            int rowNr = 0;
+            for (XWPFTableRow tableRow : table.getRows()) {
+                table.getCTTbl().setTrArray(rowNr++, tableRow.getCtRow());
+            }
+        } catch (XmlValueDisconnectedException ignored) {
+            //TODO remove crutch
         }
     }
 

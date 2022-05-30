@@ -62,10 +62,6 @@ public class SquashParagraphsService {
         }
     }
 
-    private void removeParagraph(XWPFDocument document, int i) {
-        document.removeBodyElement(i);
-    }
-
     private void addNextParagraphToPrevious(XWPFParagraph paragraph, XWPFParagraph nextParagraph) {
         removeFirstSymbol(nextParagraph);
 
