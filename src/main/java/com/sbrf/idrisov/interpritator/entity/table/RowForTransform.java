@@ -1,5 +1,6 @@
 package com.sbrf.idrisov.interpritator.entity.table;
 
+import com.sbrf.idrisov.interpritator.RowUtils;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
@@ -41,15 +42,7 @@ public class RowForTransform {
     }
 
     public int getPosOfRow() {
-        List<XWPFTableRow> tableRows = row.getTable().getRows();
-        XWPFTableRow current;
-        for (int i = 0; i < tableRows.size(); i++) {
-            current = tableRows.get(i);
-            if (current.equals(row)) {
-                return i;
-            }
-        }
-        return -1;
+        return RowUtils.getPosOfRow(row);
     }
 
     public void addVariablesValue(String value) {

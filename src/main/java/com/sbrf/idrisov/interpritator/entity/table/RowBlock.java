@@ -4,14 +4,13 @@ import com.sbrf.idrisov.interpritator.FreemarkerService;
 import com.sbrf.idrisov.interpritator.TableToRowBlockConverter;
 import com.sbrf.idrisov.interpritator.entity.RootBlock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Component
 @Scope("prototype")
@@ -19,7 +18,10 @@ public class RowBlock implements RootBlock {
 
     private final List<RowForTransform> rows;
     private final List<RowBlock> nestedBlocs;
-    private final String meta;
+    private MetaInfoRow meta;
+
+    @Lookup
+    public RowBlock getRowBlock(List<RowForTransform> rows, MetaInfoRow meta, List<RowBlock> nestedBlocs) {return null;}
 
     @Autowired
     private FreemarkerService freemarkerService;
@@ -28,14 +30,7 @@ public class RowBlock implements RootBlock {
     private TableToRowBlockConverter tableToRowBlockConverter;
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public RowBlock(List<RowForTransform> rows, String meta) {
-        this.rows = rows;
-        this.meta = meta;
-        this.nestedBlocs = null;
-    }
-
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public RowBlock(List<RowForTransform> rows, String meta, List<RowBlock> nestedBlocs) {
+    public RowBlock(List<RowForTransform> rows, MetaInfoRow meta, List<RowBlock> nestedBlocs) {
         this.rows = rows;
         this.meta = meta;
         this.nestedBlocs = nestedBlocs;
@@ -43,19 +38,21 @@ public class RowBlock implements RootBlock {
 
     @Override
     public void transform(Map<String, Object> model) {
-        String processedMeta = getProcessedMeta(model);
+        nestedBlocs.forEach(nestedBloc -> nestedBloc.insertRootLoopCondition(meta));
 
-        if (!needToRender(processedMeta)) {
+        if (!meta.isNeedToRender()) {
             removeRowBlock();
             return;
         }
 
-        String loopCondition = getLoopCondition(processedMeta);
+        String processedLoopCondition = getProcessedLoopCondition(model);
 
-        if (loopCondition.isEmpty()) {
+        if (processedLoopCondition.isEmpty()) {
             rows.forEach(rowForTransform -> rowForTransform.transform(model));
         } else {
-            String[] values = loopCondition.split("\\n");
+            String[] values = processedLoopCondition.split("\\n");
+
+            nestedBlocs.forEach(x -> x.transform(model));
 
             for (int i = values.length - 1; i > 0; i--) {
                 RowBlock newRowBlock = copyRowBlockAfterThis();
@@ -64,8 +61,14 @@ public class RowBlock implements RootBlock {
             }
 
             addValuesToRows(values[0]);
-            new RowBlock(rows, "").transform(model);
+
+            getRowBlock(rows, new MetaInfoRow(), new ArrayList<>()).transform(model);
+
         }
+    }
+
+    public void insertRootLoopCondition(MetaInfoRow rootMeta) {
+        meta.insertRootLoopCondition(rootMeta);
     }
 
     private void addValuesToRows(String value) {
@@ -81,47 +84,11 @@ public class RowBlock implements RootBlock {
             newRows.add(rows.get(i).copyRow(positionAfterThis));
         }
 
-        return new RowBlock(newRows, "");
+        return getRowBlock(newRows, new MetaInfoRow(), new ArrayList<>());
     }
 
-    private String getProcessedMeta(Map<String, Object> model) {
-        if (meta.isEmpty()) {
-            return "";
-        }
-
-        return freemarkerService.getProcessedText(meta, model);
-    }
-
-    private String getLoopCondition(String processedMeta) {
-        if (processedMeta.isEmpty()) {
-            return "";
-        }
-
-        //TODO  в объект
-        Pattern pattern = Pattern.compile("(?<=loopCondition = )((.|\\n)*?)(?=})");
-        Matcher matcher = pattern.matcher(processedMeta);
-
-        if (matcher.find()) {
-            return matcher.group();
-        }
-        return "";
-    }
-
-    private boolean needToRender(String processedMeta) {
-
-        if (processedMeta.isEmpty()) {
-            return true;
-        }
-
-        //TODO  в объект
-        Pattern patternRender = Pattern.compile("(?<=needToRender = )(.*?)(?=}|,)");
-        Matcher matcherRender = patternRender.matcher(processedMeta);
-
-        if (matcherRender.find()) {
-            return Boolean.parseBoolean(matcherRender.group());
-        }
-
-        return true;
+    private String getProcessedLoopCondition(Map<String, Object> model) {
+        return freemarkerService.getProcessedText(meta.getLoopCondition(), model);
     }
 
     private void removeRowBlock() {

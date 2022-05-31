@@ -48,9 +48,19 @@
 		<acct>
 			<idAccount>1</idAccount>
 			<account>
-				<typeAccount>Основной</typeAccount>
-				<currencyAccount>rub</currencyAccount>
-				<numberAccount>1234567891234567</numberAccount>
+				<typeAccount>Основной1</typeAccount>
+				<currencyAccount>rub1</currencyAccount>
+				<numberAccount>12345678912345671</numberAccount>
+			</account>
+			<account>
+				<typeAccount>Основной2</typeAccount>
+				<currencyAccount>rub2</currencyAccount>
+				<numberAccount>12345678912345672</numberAccount>
+			</account>
+			<account>
+				<typeAccount>Основной3</typeAccount>
+				<currencyAccount>rub3</currencyAccount>
+				<numberAccount>12345678912345673</numberAccount>
 			</account>
 		</acct>
 		<acct>
@@ -65,6 +75,11 @@
 				<currencyAccount>uani</currencyAccount>
 				<numberAccount>1029384756102938</numberAccount>
 			</account>
+			<account>
+				<typeAccount>Супер-счёт2</typeAccount>
+				<currencyAccount>uani2</currencyAccount>
+				<numberAccount>10293847561029382</numberAccount>
+			</account>
 		</acct>
 		<acct>
 			<idAccount>3</idAccount>
@@ -72,6 +87,16 @@
 				<typeAccount>1000 дней без процентов</typeAccount>
 				<currencyAccount>деревянные</currencyAccount>
 				<numberAccount>0000000000000000</numberAccount>
+			</account>
+			<account>
+				<typeAccount>1000 дней без процентов2</typeAccount>
+				<currencyAccount>деревянные2</currencyAccount>
+				<numberAccount>00000000000000002</numberAccount>
+			</account>
+			<account>
+				<typeAccount>1000 дней без процентов3</typeAccount>
+				<currencyAccount>деревянные3</currencyAccount>
+				<numberAccount>00000000000000003</numberAccount>
 			</account>
 		</acct>
 	</accountList>
@@ -97,7 +122,7 @@
 			<nameOpf>Что-то невероятное</nameOpf>
 			<numberOpf>987</numberOpf>
 		</opf>
-	</opfList>
+	</opfList>D
 	<regNumberAkcMar>666777555888</regNumberAkcMar>
 	<dateAkcMar>01.01.2021</dateAkcMar>
 	<borrowerBankName>ПАО Сбербанк</borrowerBankName>
