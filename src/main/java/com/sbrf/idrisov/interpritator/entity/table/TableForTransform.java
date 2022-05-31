@@ -116,6 +116,11 @@ public class TableForTransform {
     }
 
     private boolean needToRender(Map<String, Object> model) {
+
+        if (meta.isEmpty()) {
+            return true;
+        }
+
         //TODO  в объект
         Pattern pattern = Pattern.compile("\\{MetaInfoTable: .*?}$");
         Matcher matcher = pattern.matcher(meta);
@@ -133,7 +138,7 @@ public class TableForTransform {
 
             throw new RuntimeException();
         }
-        throw new RuntimeException();
+        return true;
     }
 
     private void removeTable() {

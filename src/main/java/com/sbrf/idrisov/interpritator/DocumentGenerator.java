@@ -33,7 +33,7 @@ public class DocumentGenerator {
             //TODO И ЭТО НОРМАЛЬНОЕ ЗАПОЛНЕНИЕ МОДЕЛИ БЛЕАТЬ? ВСЕ ТАК ЗАПОЛНЯТЬ БУДЕШЬ?
             Map<String, Object> objectMap = new HashMap<>();
 
-            objectMap.put("model", freemarker.ext.dom.NodeModel.parse(new File("src/main/resources/source.xml")));
+            objectMap.put("fileName", freemarker.ext.dom.NodeModel.parse(new File("src/main/resources/mockSource.xml")));
 
             //objectMap.put("model", model);
 

@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 @Scope("prototype")
@@ -37,12 +39,24 @@ public class TableBlock implements RootBlock {
     @Override
     public void transform(Map<String, Object> model) {
         for (XWPFTable table : tables) {
-            String meta = table.getRow(0).getCell(0).getText();
-            table.removeRow(0);
+            String meta = "";
+
+            if (haveMetaRow(table)) {
+                meta = table.getRow(0).getCell(0).getText();
+                table.removeRow(0);
+            }
+
             TableForTransform tableForTransform = getTableForTransform(table, meta);
             tableForTransform.transform(model);
         }
         tables.forEach(this::commitTableRows);
+    }
+
+    private boolean haveMetaRow(XWPFTable xwpfTable) {
+        //TODO  в объект
+        Pattern pattern = Pattern.compile("\\{MetaInfoTable: .*?}$");
+        Matcher matcher = pattern.matcher(xwpfTable.getRow(0).getCell(0).getText());
+        return matcher.find();
     }
 
     private void commitTableRows(XWPFTable table) {

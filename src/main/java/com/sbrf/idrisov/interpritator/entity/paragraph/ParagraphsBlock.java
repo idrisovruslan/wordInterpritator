@@ -42,7 +42,7 @@ public class ParagraphsBlock implements RootBlock {
             paragraphForTransform.transform();
         }
     }
-
+    //TODO баг если несколько параграфов в цикле (надо объединять текст не по параграфам, а по блокам)
     private List<ParagraphForTransform> getParagraphsForTransform(String[] paragraphsText) {
         List<ParagraphForTransform> result = new ArrayList<>();
 

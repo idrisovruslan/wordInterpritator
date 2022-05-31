@@ -108,7 +108,7 @@ public class RowBlock implements RootBlock {
             return Boolean.parseBoolean(matcherRender.group());
         }
 
-        throw new RuntimeException();
+        return true;
     }
 
     private void removeRowBlock() {
