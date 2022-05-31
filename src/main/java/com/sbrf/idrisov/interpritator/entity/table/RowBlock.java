@@ -1,6 +1,7 @@
 package com.sbrf.idrisov.interpritator.entity.table;
 
 import com.sbrf.idrisov.interpritator.FreemarkerService;
+import com.sbrf.idrisov.interpritator.TableToRowBlockConverter;
 import com.sbrf.idrisov.interpritator.entity.RootBlock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -17,15 +18,27 @@ import java.util.regex.Pattern;
 public class RowBlock implements RootBlock {
 
     private final List<RowForTransform> rows;
+    private final List<RowBlock> nestedBlocs;
     private final String meta;
 
     @Autowired
     private FreemarkerService freemarkerService;
 
+    @Autowired
+    private TableToRowBlockConverter tableToRowBlockConverter;
+
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     public RowBlock(List<RowForTransform> rows, String meta) {
         this.rows = rows;
         this.meta = meta;
+        this.nestedBlocs = null;
+    }
+
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    public RowBlock(List<RowForTransform> rows, String meta, List<RowBlock> nestedBlocs) {
+        this.rows = rows;
+        this.meta = meta;
+        this.nestedBlocs = nestedBlocs;
     }
 
     @Override
