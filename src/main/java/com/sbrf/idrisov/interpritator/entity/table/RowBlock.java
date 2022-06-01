@@ -3,25 +3,29 @@ package com.sbrf.idrisov.interpritator.entity.table;
 import com.sbrf.idrisov.interpritator.FreemarkerService;
 import com.sbrf.idrisov.interpritator.TableToRowBlockConverter;
 import com.sbrf.idrisov.interpritator.entity.RootBlock;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
 public class RowBlock implements RootBlock {
 
+    @Getter
     private final List<RowForTransform> rows;
-    private final List<RowBlock> nestedBlocs;
     private MetaInfoRow meta;
+    @Setter
+    private boolean haveMeta = false;
 
     @Lookup
-    public RowBlock getRowBlock(List<RowForTransform> rows, MetaInfoRow meta, List<RowBlock> nestedBlocs) {return null;}
+    public RowBlock getRowBlock(List<RowForTransform> rows, MetaInfoRow meta, boolean haveMeta) {return null;}
 
     @Autowired
     private FreemarkerService freemarkerService;
@@ -30,15 +34,14 @@ public class RowBlock implements RootBlock {
     private TableToRowBlockConverter tableToRowBlockConverter;
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public RowBlock(List<RowForTransform> rows, MetaInfoRow meta, List<RowBlock> nestedBlocs) {
+    public RowBlock(List<RowForTransform> rows, MetaInfoRow meta, boolean haveMeta) {
         this.rows = rows;
         this.meta = meta;
-        this.nestedBlocs = nestedBlocs;
+        this.haveMeta = haveMeta;
     }
 
     @Override
     public void transform(Map<String, Object> model) {
-        nestedBlocs.forEach(nestedBloc -> nestedBloc.insertRootLoopCondition(meta));
 
         if (!meta.isNeedToRender()) {
             removeRowBlock();
@@ -48,43 +51,46 @@ public class RowBlock implements RootBlock {
         String processedLoopCondition = getProcessedLoopCondition(model);
 
         if (processedLoopCondition.isEmpty()) {
-            rows.forEach(rowForTransform -> rowForTransform.transform(model));
+            rows.forEach(rowForTransform -> rowForTransform.transform(model, haveMeta));
         } else {
             String[] values = processedLoopCondition.split("\\n");
-
-            nestedBlocs.forEach(x -> x.transform(model));
 
             for (int i = values.length - 1; i > 0; i--) {
                 RowBlock newRowBlock = copyRowBlockAfterThis();
                 newRowBlock.addValuesToRows(values[i]);
                 newRowBlock.transform(model);
+
+                List<XWPFTableRow> rows = newRowBlock.getRows().stream().map(RowForTransform::getRow).collect(Collectors.toList());
+                List<RowBlock> nestedRowBlocks = tableToRowBlockConverter.getRowBlocks(rows);
+                nestedRowBlocks.forEach(nestedRowBlock -> nestedRowBlock.transform(model));
             }
 
             addValuesToRows(values[0]);
 
-            getRowBlock(rows, new MetaInfoRow(), new ArrayList<>()).transform(model);
+            RowBlock rowBlock = getRowBlock(rows, new MetaInfoRow(), haveMeta);
+            rowBlock.transform(model);
+
+            List<XWPFTableRow> rows = rowBlock.getRows().stream().map(RowForTransform::getRow).collect(Collectors.toList());
+            List<RowBlock> nestedRowBlocks = tableToRowBlockConverter.getRowBlocks(rows);
+            nestedRowBlocks.forEach(nestedRowBlock -> nestedRowBlock.transform(model));
 
         }
     }
 
-    public void insertRootLoopCondition(MetaInfoRow rootMeta) {
-        meta.insertRootLoopCondition(rootMeta);
-    }
-
-    private void addValuesToRows(String value) {
-        rows.forEach(rowForTransform -> rowForTransform.addVariablesValue(value));
+    private void addValuesToRows(String values) {
+        rows.forEach(rowForTransform -> rowForTransform.addVariablesValue(values));
     }
 
     private RowBlock copyRowBlockAfterThis() {
-        List<RowForTransform> newRows = new ArrayList<>();
+        Deque<RowForTransform> newRows = new LinkedList<>();
 
         int positionAfterThis = rows.get(rows.size() - 1).getPosOfRow() + 1;
 
         for (int i = rows.size() - 1; i >= 0; i--) {
-            newRows.add(rows.get(i).copyRow(positionAfterThis));
+            newRows.addFirst(rows.get(i).copyRow(positionAfterThis));
         }
 
-        return getRowBlock(newRows, new MetaInfoRow(), new ArrayList<>());
+        return getRowBlock(new ArrayList<>(newRows), new MetaInfoRow(), haveMeta);
     }
 
     private String getProcessedLoopCondition(Map<String, Object> model) {

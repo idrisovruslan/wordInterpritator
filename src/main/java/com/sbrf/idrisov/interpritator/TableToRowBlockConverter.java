@@ -8,17 +8,19 @@ import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 
 import static com.sbrf.idrisov.interpritator.RowUtils.getPosOfRow;
+import static com.sbrf.idrisov.interpritator.entity.table.MetaInfoRow.*;
 
 @Service
 public class TableToRowBlockConverter {
 
     @Lookup
-    public RowBlock getRowBlock(List<RowForTransform> rows, MetaInfoRow meta, List<RowBlock> nestedBlocs) {return null;}
+    public RowBlock getRowBlock(List<RowForTransform> rows, MetaInfoRow meta, boolean haveMeta) {return null;}
 
     @Lookup
     public RowForTransform getRowForTransform(XWPFTableRow row) {return null;}
@@ -29,7 +31,7 @@ public class TableToRowBlockConverter {
         return rowBlocks;
     }
 
-    private List<RowBlock> getRowBlocks(List<XWPFTableRow> rows) {
+    public List<RowBlock> getRowBlocks(List<XWPFTableRow> rows) {
 
         if (rows.isEmpty()) {
             throw new RuntimeException();
@@ -42,20 +44,23 @@ public class TableToRowBlockConverter {
 
     private List<RowBlock> getRowBlocks(XWPFTable table, List<XWPFTableRow> rows) {
         List<RowBlock> blocks = new ArrayList<>();
-        List<RowBlock> nestedBlocks = new ArrayList<>();
 
         List<RowForTransform> temp = new ArrayList<>();
         MetaInfoRow meta = new MetaInfoRow();
 
         Deque<XWPFTableRow> rowsToRemove = new LinkedList<>();
 
+        boolean haveNestedMeta = false;
         int counterStartsBlocks = 0;
         while (rows.size() != 0) {
             XWPFTableRow row = rows.get(0);
+            //начало блока
             if (counterStartsBlocks == 0 && isStartMetaRow(row)) {
                 if (!temp.isEmpty()) {
-                    blocks.add(getRowBlock(temp, meta, nestedBlocks));
+                    blocks.add(getRowBlock(temp, meta, haveNestedMeta));
                     temp = new ArrayList<>();
+                    meta = new MetaInfoRow();
+                    haveNestedMeta = false;
                 }
 
                 meta = new MetaInfoRow(row.getCell(0).getText());
@@ -65,51 +70,45 @@ public class TableToRowBlockConverter {
                 continue;
             }
 
+            if (counterStartsBlocks > 1 && isEndMetaRow(row)) {
+                temp.add(getRowForTransform(row));
+                rows.remove(0);
+                counterStartsBlocks--;
+                continue;
+            }
+
+            if (counterStartsBlocks > 0 && isStartMetaRow(row)) {
+                temp.add(getRowForTransform(row));
+                rows.remove(0);
+                counterStartsBlocks++;
+                haveNestedMeta = true;
+                continue;
+            }
+
             if (!isMetaRow(row)) {
                 temp.add(getRowForTransform(row));
                 rows.remove(0);
                 continue;
             }
 
+            //конец блока
             if (counterStartsBlocks == 1 && isEndMetaRow(row)) {
-                blocks.add(getRowBlock(temp, meta, nestedBlocks));
-                rowsToRemove.addFirst(row);
-
-                counterStartsBlocks = 0;
+                blocks.add(getRowBlock(temp, meta, haveNestedMeta));
                 temp = new ArrayList<>();
-                meta = new MetaInfoRow();
+                rowsToRemove.addFirst(row);
+                counterStartsBlocks = 0;
                 rows.remove(0);
+                meta = new MetaInfoRow();
+                haveNestedMeta = false;
                 continue;
             }
+            throw new RuntimeException();
+        }
 
-            if (counterStartsBlocks == 1 && isStartMetaRow(row)) {
-                nestedBlocks = getRowBlocks(rows);
-                continue;
-            }
-
-            if (counterStartsBlocks == 0 && isEndMetaRow(row)) {
-                break;
-            }
+        if (!temp.isEmpty()) {
+            blocks.add(getRowBlock(temp, meta, haveNestedMeta));
         }
         rowsToRemove.forEach(xwpfTableRow -> table.removeRow(getPosOfRow(xwpfTableRow)));
         return blocks;
-    }
-
-    private boolean isMetaRow(XWPFTableRow xwpfTableRow) {
-        return isStartMetaRow(xwpfTableRow) || isEndMetaRow(xwpfTableRow);
-    }
-
-    private boolean isStartMetaRow(XWPFTableRow xwpfTableRow) {
-        //TODO  в объект
-        Pattern pattern = Pattern.compile("\\{MetaInfoRow: .*?}$");
-        Matcher matcher = pattern.matcher(xwpfTableRow.getCell(0).getText());
-        return matcher.find();
-    }
-
-    private boolean isEndMetaRow(XWPFTableRow xwpfTableRow) {
-        //TODO  в объект
-        Pattern pattern = Pattern.compile("\\{MetaInfoRow}$");
-        Matcher matcher = pattern.matcher(xwpfTableRow.getCell(0).getText());
-        return matcher.find();
     }
 }

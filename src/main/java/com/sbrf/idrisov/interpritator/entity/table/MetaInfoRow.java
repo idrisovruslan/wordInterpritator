@@ -1,14 +1,16 @@
 package com.sbrf.idrisov.interpritator.entity.table;
 
 import lombok.Getter;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Getter
 public class MetaInfoRow {
 
+    private String variables;
     private String loopCondition;
+    @Getter
     private boolean needToRender;
 
     public MetaInfoRow(String textMeta) {
@@ -17,20 +19,32 @@ public class MetaInfoRow {
 
     public MetaInfoRow() {
         this.loopCondition = "";
+        this.variables = "";
         this.needToRender = true;
     }
 
     private void parseMeta(String textMeta) {
         this.loopCondition = parseLoopCondition(textMeta);
+        this.variables = parseVariables(textMeta);
         this.needToRender = parseNeedToRender(textMeta);
     }
 
-    public void insertRootLoopCondition(MetaInfoRow rootMeta) {
-        String rootLoopCondition = rootMeta.getLoopCondition();
-        String thisLoopCondition = loopCondition;
+    public String getLoopCondition() {
+        return variables + loopCondition;
+    }
 
-        int insertPos = rootLoopCondition.indexOf("<#sep>${'\\n'}</#sep>");
-        loopCondition = new StringBuilder(rootLoopCondition).insert(insertPos, thisLoopCondition).toString();
+    private String parseVariables(String rootMeta) {
+        if (rootMeta.isEmpty()) {
+            return "";
+        }
+
+        Pattern pattern = Pattern.compile("((.|\\n)*?)(?=\\{MetaInfoRow:)");
+        Matcher matcher = pattern.matcher(rootMeta);
+
+        if (matcher.find()) {
+            return matcher.group();
+        }
+        return "";
     }
 
     private String parseLoopCondition(String rootMeta) {
@@ -61,5 +75,23 @@ public class MetaInfoRow {
         }
 
         return true;
+    }
+
+    public static boolean isMetaRow(XWPFTableRow xwpfTableRow) {
+        return isStartMetaRow(xwpfTableRow) || isEndMetaRow(xwpfTableRow);
+    }
+
+    public static boolean isStartMetaRow(XWPFTableRow xwpfTableRow) {
+        //TODO  в объект
+        Pattern pattern = Pattern.compile("\\{MetaInfoRow: .*?}$");
+        Matcher matcher = pattern.matcher(xwpfTableRow.getCell(0).getText());
+        return matcher.find();
+    }
+
+    public static boolean isEndMetaRow(XWPFTableRow xwpfTableRow) {
+        //TODO  в объект
+        Pattern pattern = Pattern.compile("\\{MetaInfoRow}$");
+        Matcher matcher = pattern.matcher(xwpfTableRow.getCell(0).getText());
+        return matcher.find();
     }
 }

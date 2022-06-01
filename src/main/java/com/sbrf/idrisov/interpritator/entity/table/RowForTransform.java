@@ -1,6 +1,7 @@
 package com.sbrf.idrisov.interpritator.entity.table;
 
 import com.sbrf.idrisov.interpritator.RowUtils;
+import lombok.Getter;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
 
 
@@ -19,6 +19,7 @@ import java.util.Map;
 @Scope("prototype")
 public class RowForTransform {
 
+    @Getter
     private final XWPFTableRow row;
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
@@ -32,7 +33,10 @@ public class RowForTransform {
     @Lookup
     public RowForTransform getRowForTransform(XWPFTableRow row) {return null;}
 
-    public void transform(Map<String, Object> model) {
+    public void transform(Map<String, Object> model, boolean haveMeta) {
+        if (haveMeta) {
+            return;
+        }
         row.getTableCells().stream().map(this::getCellForTransform).forEach(cellForTransform -> cellForTransform.transform(model));
     }
 
