@@ -60,9 +60,7 @@ public class RowBlock implements RootBlock {
                 newRowBlock.addValuesToRows(values[i]);
                 newRowBlock.transform(model);
 
-                List<XWPFTableRow> rows = newRowBlock.getRows().stream().map(RowForTransform::getRow).collect(Collectors.toList());
-                List<RowBlock> nestedRowBlocks = tableToRowBlockConverter.getRowBlocks(rows);
-                nestedRowBlocks.forEach(nestedRowBlock -> nestedRowBlock.transform(model));
+                reRander(model, newRowBlock);
             }
 
             addValuesToRows(values[0]);
@@ -70,11 +68,14 @@ public class RowBlock implements RootBlock {
             RowBlock rowBlock = getRowBlock(rows, new MetaInfoRow(), haveMeta);
             rowBlock.transform(model);
 
-            List<XWPFTableRow> rows = rowBlock.getRows().stream().map(RowForTransform::getRow).collect(Collectors.toList());
-            List<RowBlock> nestedRowBlocks = tableToRowBlockConverter.getRowBlocks(rows);
-            nestedRowBlocks.forEach(nestedRowBlock -> nestedRowBlock.transform(model));
-
+            reRander(model, rowBlock);
         }
+    }
+
+    private void reRander(Map<String, Object> model, RowBlock newRowBlock) {
+        List<XWPFTableRow> rows = newRowBlock.getRows().stream().map(RowForTransform::getRow).collect(Collectors.toList());
+        List<RowBlock> nestedRowBlocks = tableToRowBlockConverter.getRowBlocks(rows);
+        nestedRowBlocks.forEach(nestedRowBlock -> nestedRowBlock.transform(model));
     }
 
     private void addValuesToRows(String values) {
