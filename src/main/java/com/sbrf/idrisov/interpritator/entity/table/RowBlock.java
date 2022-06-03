@@ -24,11 +24,11 @@ public class RowBlock implements RootBlock {
     @Setter
     private boolean haveMeta = false;
 
-    @Lookup
-    public RowBlock getRowBlock(List<RowForTransform> rows, MetaInfoRow meta, boolean haveMeta) {return null;}
-
     @Autowired
     private FreemarkerService freemarkerService;
+
+    @Lookup
+    public RowBlock getRowBlock(List<RowForTransform> rows, MetaInfoRow meta, boolean haveMeta) {return null;}
 
     @Autowired
     private TableToRowBlockConverter tableToRowBlockConverter;
@@ -42,8 +42,8 @@ public class RowBlock implements RootBlock {
 
     @Override
     public void transform(Map<String, Object> model) {
-
-        if (!meta.isNeedToRender()) {
+        String needToRenderProcessed = freemarkerService.getProcessedText(meta.getNeedToRender(), model);
+        if (!Boolean.parseBoolean(needToRenderProcessed)) {
             removeRowBlock();
             return;
         }
@@ -74,7 +74,7 @@ public class RowBlock implements RootBlock {
 
     private void reRander(Map<String, Object> model, RowBlock newRowBlock) {
         List<XWPFTableRow> rows = newRowBlock.getRows().stream().map(RowForTransform::getRow).collect(Collectors.toList());
-        List<RowBlock> nestedRowBlocks = tableToRowBlockConverter.getRowBlocks(rows);
+        List<RowBlock> nestedRowBlocks = tableToRowBlockConverter.getRowBlocks(rows, model);
         nestedRowBlocks.forEach(nestedRowBlock -> nestedRowBlock.transform(model));
     }
 

@@ -3,6 +3,7 @@ package com.sbrf.idrisov.interpritator.entity.table;
 import lombok.Getter;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,22 +12,22 @@ public class MetaInfoRow {
     private String variables;
     private String loopCondition;
     @Getter
-    private boolean needToRender;
+    private String needToRender;
 
-    public MetaInfoRow(String textMeta) {
-        parseMeta(textMeta);
+    public MetaInfoRow(String textMeta, Map<String, Object> model) {
+        parseMeta(textMeta, model);
     }
 
     public MetaInfoRow() {
         this.loopCondition = "";
         this.variables = "";
-        this.needToRender = true;
+        this.needToRender = "true";
     }
 
-    private void parseMeta(String textMeta) {
+    private void parseMeta(String textMeta, Map<String, Object> model) {
         this.loopCondition = parseLoopCondition(textMeta);
         this.variables = parseVariables(textMeta);
-        this.needToRender = parseNeedToRender(textMeta);
+        this.needToRender = parseNeedToRender(textMeta, model);
     }
 
     public String getLoopCondition() {
@@ -61,20 +62,20 @@ public class MetaInfoRow {
         return "";
     }
 
-    private boolean parseNeedToRender(String processedMeta) {
+    private String parseNeedToRender(String processedMeta, Map<String, Object> model) {
 
         if (processedMeta.isEmpty()) {
-            return true;
+            return "true";
         }
 
         Pattern patternRender = Pattern.compile("(?<=needToRender = )((.|\\n)*?)(?=}$|,)");
         Matcher matcherRender = patternRender.matcher(processedMeta);
 
         if (matcherRender.find()) {
-            return Boolean.parseBoolean(matcherRender.group());
+            return matcherRender.group();
         }
 
-        return true;
+        return "true";
     }
 
     public static boolean isMetaRow(XWPFTableRow xwpfTableRow) {

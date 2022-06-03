@@ -42,7 +42,7 @@ public class TableForTransform {
             return;
         }
 
-        List<RowBlock> blocks = tableToRowBlockConverter.getRowBlocks(table);
+        List<RowBlock> blocks = tableToRowBlockConverter.getRowBlocks(table, model);
 
         blocks.forEach(rowBlock -> rowBlock.transform(model));
     }

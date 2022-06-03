@@ -1,12 +1,13 @@
 package com.sbrf.idrisov.interpritator;
 
-import com.sbrf.idrisov.interpritator.models.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 @SpringBootApplication
 public class Main implements CommandLineRunner {
@@ -23,9 +24,12 @@ public class Main implements CommandLineRunner {
     }
 
     public void run(java.lang.String... args) throws Exception {
-        Model myModel = Model.getModelFromFile(new File("src/main/resources/source.xml"));
-        File  sourceDocxFile = new File("src/main/resources/mock2.docx");
+        File  sourceDocxFile = new File("src/main/resources/romSourceBack.docx");
 
-        documentGenerator.generate(myModel, sourceDocxFile);
+        //TODO И ЭТО НОРМАЛЬНОЕ ЗАПОЛНЕНИЕ МОДЕЛИ БЛЕАТЬ? ВСЕ ТАК ЗАПОЛНЯТЬ БУДЕШЬ?
+        Map<String, Object> objectMap = new HashMap<>();
+        objectMap.put("fileName", freemarker.ext.dom.NodeModel.parse(new File("src/main/resources/mockSource2.xml")));
+
+        documentGenerator.generate(objectMap, sourceDocxFile);
     }
 }

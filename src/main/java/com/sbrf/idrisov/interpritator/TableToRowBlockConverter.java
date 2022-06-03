@@ -8,10 +8,7 @@ import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static com.sbrf.idrisov.interpritator.RowUtils.getPosOfRow;
 import static com.sbrf.idrisov.interpritator.entity.table.MetaInfoRow.*;
@@ -25,24 +22,24 @@ public class TableToRowBlockConverter {
     @Lookup
     public RowForTransform getRowForTransform(XWPFTableRow row) {return null;}
 
-    public List<RowBlock> getRowBlocks(XWPFTable table) {
+    public List<RowBlock> getRowBlocks(XWPFTable table, Map<String, Object> model) {
         List<XWPFTableRow> rows = new ArrayList<>(table.getRows());
-        List<RowBlock> rowBlocks = getRowBlocks(table, rows);
+        List<RowBlock> rowBlocks = getRowBlocks(table, rows, model);
         return rowBlocks;
     }
 
-    public List<RowBlock> getRowBlocks(List<XWPFTableRow> rows) {
+    public List<RowBlock> getRowBlocks(List<XWPFTableRow> rows, Map<String, Object> model) {
 
         if (rows.isEmpty()) {
             throw new RuntimeException();
         }
 
         XWPFTable table = rows.get(0).getTable();
-        List<RowBlock> rowBlocks = getRowBlocks(table, rows);
+        List<RowBlock> rowBlocks = getRowBlocks(table, rows, model);
         return rowBlocks;
     }
 
-    private List<RowBlock> getRowBlocks(XWPFTable table, List<XWPFTableRow> rows) {
+    private List<RowBlock> getRowBlocks(XWPFTable table, List<XWPFTableRow> rows, Map<String, Object> model) {
         List<RowBlock> blocks = new ArrayList<>();
 
         List<RowForTransform> temp = new ArrayList<>();
@@ -63,7 +60,7 @@ public class TableToRowBlockConverter {
                     haveNestedMeta = false;
                 }
 
-                meta = new MetaInfoRow(row.getCell(0).getText());
+                meta = new MetaInfoRow(row.getCell(0).getText(), model);
                 rowsToRemove.addFirst(row);
                 counterStartsBlocks++;
                 rows.remove(0);
