@@ -3,6 +3,8 @@ package com.sbrf.idrisov.interpritator;
 import com.sbrf.idrisov.interpritator.entity.RootBlock;
 import lombok.SneakyThrows;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFFooter;
+import org.apache.poi.xwpf.usermodel.XWPFHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +37,24 @@ public class DocumentGenerator {
 
             squashParagraphsService.squashParagraphs(document);
 
+            headerFooterTransform(document, model);
+
             document.write(out);
+        }
+    }
+
+    //TODO вынести в сервис
+    public void headerFooterTransform(XWPFDocument document, Map<String, Object> model) {
+        List<XWPFFooter> footerList = document.getFooterList();
+        for (XWPFFooter footer:footerList) {
+            List<RootBlock> rootBlocks = documentToBodyBlockConverter.generateBlocksForTransform(footer);
+            rootBlocks.forEach(paragraphsBlock -> paragraphsBlock.transform(model));
+        }
+
+        List<XWPFHeader> headerList = document.getHeaderList();
+        for (XWPFHeader header:headerList) {
+            List<RootBlock> rootBlocks = documentToBodyBlockConverter.generateBlocksForTransform(header);
+            rootBlocks.forEach(paragraphsBlock -> paragraphsBlock.transform(model));
         }
     }
 }

@@ -24,7 +24,7 @@ public class Main implements CommandLineRunner {
     }
 
     public void run(java.lang.String... args) throws Exception {
-        File  sourceDocxFile = new File("src/main/resources/romSourceBack.docx");
+        File  sourceDocxFile = new File("src/main/resources/mock2.docx");
 
         //TODO И ЭТО НОРМАЛЬНОЕ ЗАПОЛНЕНИЕ МОДЕЛИ БЛЕАТЬ? ВСЕ ТАК ЗАПОЛНЯТЬ БУДЕШЬ?
         Map<String, Object> objectMap = new HashMap<>();

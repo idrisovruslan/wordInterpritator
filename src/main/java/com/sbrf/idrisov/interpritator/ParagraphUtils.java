@@ -17,9 +17,14 @@ public class ParagraphUtils {
         if (paragraph.getBody() instanceof XWPFTableCell) {
             XWPFTableCell cell = (XWPFTableCell) paragraph.getBody();
             cell.removeParagraph(getPosOfBodyElement(paragraph, cell.getParagraphs()));
-        } else {
+        } else if (paragraph.getBody() instanceof XWPFDocument) {
             XWPFDocument document = paragraph.getDocument();
             document.removeBodyElement(document.getPosOfParagraph(paragraph));
+        } else if (paragraph.getBody() instanceof XWPFFooter) {
+            XWPFFooter footer = (XWPFFooter) paragraph.getBody();
+            footer.removeParagraph(paragraph);
+        } else {
+            throw new RuntimeException(paragraph.getText());
         }
     }
 

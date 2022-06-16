@@ -29,6 +29,11 @@ public class DocumentToBodyBlockConverter {
         return generateBlocksForTransform(bodyElements);
     }
 
+    public List<RootBlock> generateBlocksForTransform(XWPFHeaderFooter headerFooter) {
+        List<IBodyElement> bodyElements = headerFooter.getBodyElements();
+        return generateBlocksForTransform(bodyElements);
+    }
+
     private List<RootBlock> generateBlocksForTransform(List<IBodyElement> bodyElements) {
         List<RootBlock> blocksForTransform = new ArrayList<>();
 
@@ -62,7 +67,7 @@ public class DocumentToBodyBlockConverter {
                 if (i == bodyElements.size() - 1) {
                     blocksForTransform.add(getTableBlock(temp));
                 }
-            } else {
+            } else if (!(bodyElements.get(i) instanceof XWPFSDT)){
                 throw new RuntimeException();
             }
         }
