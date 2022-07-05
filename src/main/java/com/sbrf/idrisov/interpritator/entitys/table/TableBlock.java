@@ -1,6 +1,7 @@
 package com.sbrf.idrisov.interpritator.entitys.table;
 
 import com.sbrf.idrisov.interpritator.entitys.BodyBlock;
+import com.sbrf.idrisov.interpritator.entitys.table.metainfo.TableMetaInfo;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.apache.xmlbeans.impl.values.XmlValueDisconnectedException;
@@ -10,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static com.sbrf.idrisov.interpritator.entitys.table.metainfo.TableMetaInfo.isTableMetaInfo;
 
 @Component
 @Scope("prototype")
@@ -20,7 +21,7 @@ public class TableBlock implements BodyBlock {
     private final List<XWPFTable> tables;
 
     @Lookup
-    public TableForTransform getTableForTransform(XWPFTable table, String meta) {return null;}
+    public TableForTransform getTableForTransform(XWPFTable table, TableMetaInfo tableMetaInfo) {return null;}
 
     public TableBlock(List<XWPFTable> tables) {
         this.tables = tables;
@@ -29,24 +30,19 @@ public class TableBlock implements BodyBlock {
     @Override
     public void transformBlock(Map<String, Object> model) {
         for (XWPFTable table : tables) {
-            String meta = "";
 
-            if (haveMetaRow(table)) {
-                meta = table.getRow(0).getCell(0).getText();
+            TableMetaInfo tableMetaInfo = new TableMetaInfo();
+
+            String firstRowText = table.getRow(0).getCell(0).getText();
+            if (isTableMetaInfo(firstRowText)) {
                 table.removeRow(0);
+                tableMetaInfo = new TableMetaInfo(firstRowText);
             }
 
-            TableForTransform tableForTransform = getTableForTransform(table, meta);
+            TableForTransform tableForTransform = getTableForTransform(table, tableMetaInfo);
             tableForTransform.transform(model);
         }
         tables.forEach(this::commitTableRows);
-    }
-
-    private boolean haveMetaRow(XWPFTable xwpfTable) {
-        //TODO  в объект
-        Pattern pattern = Pattern.compile("\\{MetaInfoTable: .*?}$");
-        Matcher matcher = pattern.matcher(xwpfTable.getRow(0).getCell(0).getText());
-        return matcher.find();
     }
 
     private void commitTableRows(XWPFTable table) {

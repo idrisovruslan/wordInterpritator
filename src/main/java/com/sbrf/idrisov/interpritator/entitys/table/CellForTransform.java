@@ -29,8 +29,7 @@ public class CellForTransform {
     }
 
     public void transform(Map<String, Object> model) {
-        List<BodyBlock> paragraphsBlocks = IBodyToBodyBlockConverter
-                .generateBodyBlocks(cell);
+        List<BodyBlock> paragraphsBlocks = IBodyToBodyBlockConverter.generateBodyBlocks(cell);
 
         paragraphsBlocks.forEach(paragraphsBlock -> paragraphsBlock.transformBlock(model));
 

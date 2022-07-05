@@ -1,6 +1,7 @@
 package com.sbrf.idrisov.interpritator.entitys.table;
 
 import com.sbrf.idrisov.interpritator.converters.TableToRowLogicalBlockConverter;
+import com.sbrf.idrisov.interpritator.entitys.table.metainfo.TableMetaInfo;
 import com.sbrf.idrisov.interpritator.services.FreemarkerService;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
@@ -11,8 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.sbrf.idrisov.interpritator.utils.ParagraphUtils.getPosOfBodyElement;
 
@@ -21,7 +20,7 @@ import static com.sbrf.idrisov.interpritator.utils.ParagraphUtils.getPosOfBodyEl
 public class TableForTransform {
 
     private final XWPFTable table;
-    private final String meta;
+    private final TableMetaInfo tableMetaInfo;
 
     @Autowired
     private FreemarkerService freemarkerService;
@@ -30,14 +29,15 @@ public class TableForTransform {
     private TableToRowLogicalBlockConverter tableToRowLogicalBlockConverter;
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public TableForTransform(XWPFTable table, String meta) {
+    public TableForTransform(XWPFTable table, TableMetaInfo tableMetaInfo) {
         this.table = table;
-        this.meta = meta;
+        this.tableMetaInfo = tableMetaInfo;
     }
 
 
     public void transform(Map<String, Object> model) {
-        if (!needToRender(model)) {
+        String needToRenderProcessed = freemarkerService.getProcessedText(tableMetaInfo.getNeedToRenderCondition(), model);
+        if (!Boolean.parseBoolean(needToRenderProcessed)) {
             removeTable();
             return;
         }
@@ -45,32 +45,6 @@ public class TableForTransform {
         List<RowLogicalBlock> blocks = tableToRowLogicalBlockConverter.getRowBlocks(table, model);
 
         blocks.forEach(rowLogicalBlock -> rowLogicalBlock.transform(model));
-    }
-
-    private boolean needToRender(Map<String, Object> model) {
-
-        if (meta.isEmpty()) {
-            return true;
-        }
-
-        //TODO  в объект
-        Pattern pattern = Pattern.compile("\\{MetaInfoTable: .*?}$");
-        Matcher matcher = pattern.matcher(meta);
-
-        if (matcher.find()) {
-            String processedMeta = freemarkerService.getProcessedText(matcher.group(), model);
-
-            //TODO  в объект
-            Pattern patternRender = Pattern.compile("(?<=\\{MetaInfoTable: needToRender = )(.*?)(?=\\})");
-            Matcher matcherRender = patternRender.matcher(processedMeta);
-
-            if (matcherRender.find()) {
-                return Boolean.parseBoolean(matcherRender.group());
-            }
-
-            throw new RuntimeException();
-        }
-        return true;
     }
 
     private void removeTable() {

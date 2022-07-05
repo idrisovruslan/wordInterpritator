@@ -3,31 +3,31 @@ package com.sbrf.idrisov.interpritator.entitys.table.metainfo;
 import lombok.Getter;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MetaInfoRow {
+public class RowMetaInfo {
 
     private String variables;
     private String loopCondition;
+    //TODO тут обработай фримаркером
     @Getter
-    private String needToRender;
+    private String needToRenderCondition;
 
-    public MetaInfoRow(String textMeta, Map<String, Object> model) {
-        parseMeta(textMeta, model);
+    public RowMetaInfo(String textMeta) {
+        parseMeta(textMeta);
     }
 
-    public MetaInfoRow() {
+    public RowMetaInfo() {
         this.loopCondition = "";
         this.variables = "";
-        this.needToRender = "true";
+        this.needToRenderCondition = "true";
     }
 
-    private void parseMeta(String textMeta, Map<String, Object> model) {
+    private void parseMeta(String textMeta) {
         this.loopCondition = parseLoopCondition(textMeta);
         this.variables = parseVariables(textMeta);
-        this.needToRender = parseNeedToRender(textMeta, model);
+        this.needToRenderCondition = parseNeedToRender(textMeta);
     }
 
     public String getLoopCondition() {
@@ -62,14 +62,14 @@ public class MetaInfoRow {
         return "";
     }
 
-    private String parseNeedToRender(String processedMeta, Map<String, Object> model) {
+    private String parseNeedToRender(String notProcessedMeta) {
 
-        if (processedMeta.isEmpty()) {
+        if (notProcessedMeta.isEmpty()) {
             return "true";
         }
 
         Pattern patternRender = Pattern.compile("(?<=needToRender = )((.|\\n)*?)(?=}$|,)");
-        Matcher matcherRender = patternRender.matcher(processedMeta);
+        Matcher matcherRender = patternRender.matcher(notProcessedMeta);
 
         if (matcherRender.find()) {
             return matcherRender.group();

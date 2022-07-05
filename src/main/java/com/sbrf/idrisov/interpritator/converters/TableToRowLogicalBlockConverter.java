@@ -2,7 +2,7 @@ package com.sbrf.idrisov.interpritator.converters;
 
 import com.sbrf.idrisov.interpritator.entitys.table.RowForTransform;
 import com.sbrf.idrisov.interpritator.entitys.table.RowLogicalBlock;
-import com.sbrf.idrisov.interpritator.entitys.table.metainfo.MetaInfoRow;
+import com.sbrf.idrisov.interpritator.entitys.table.metainfo.RowMetaInfo;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -10,14 +10,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static com.sbrf.idrisov.interpritator.entitys.table.metainfo.MetaInfoRow.*;
+import static com.sbrf.idrisov.interpritator.entitys.table.metainfo.RowMetaInfo.*;
 import static com.sbrf.idrisov.interpritator.utils.RowUtils.getPosOfRow;
 
 @Service
 public class TableToRowLogicalBlockConverter {
 
     @Lookup
-    public RowLogicalBlock getRowBlock(List<RowForTransform> rows, MetaInfoRow meta, boolean haveMeta) {return null;}
+    public RowLogicalBlock getRowBlock(List<RowForTransform> rows, RowMetaInfo meta, boolean haveMeta) {return null;}
 
     @Lookup
     public RowForTransform getRowForTransform(XWPFTableRow row) {return null;}
@@ -43,7 +43,7 @@ public class TableToRowLogicalBlockConverter {
         List<RowLogicalBlock> blocks = new ArrayList<>();
 
         List<RowForTransform> temp = new ArrayList<>();
-        MetaInfoRow meta = new MetaInfoRow();
+        RowMetaInfo meta = new RowMetaInfo();
 
         Deque<XWPFTableRow> rowsToRemove = new LinkedList<>();
 
@@ -56,11 +56,10 @@ public class TableToRowLogicalBlockConverter {
                 if (!temp.isEmpty()) {
                     blocks.add(getRowBlock(temp, meta, haveNestedMeta));
                     temp = new ArrayList<>();
-                    meta = new MetaInfoRow();
+                    meta = new RowMetaInfo(row.getCell(0).getText());
                     haveNestedMeta = false;
                 }
 
-                meta = new MetaInfoRow(row.getCell(0).getText(), model);
                 rowsToRemove.addFirst(row);
                 counterStartsBlocks++;
                 rows.remove(0);
@@ -95,7 +94,7 @@ public class TableToRowLogicalBlockConverter {
                 rowsToRemove.addFirst(row);
                 counterStartsBlocks = 0;
                 rows.remove(0);
-                meta = new MetaInfoRow();
+                meta = new RowMetaInfo();
                 haveNestedMeta = false;
                 continue;
             }

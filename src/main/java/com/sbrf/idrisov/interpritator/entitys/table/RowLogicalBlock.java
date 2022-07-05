@@ -1,7 +1,7 @@
 package com.sbrf.idrisov.interpritator.entitys.table;
 
 import com.sbrf.idrisov.interpritator.converters.TableToRowLogicalBlockConverter;
-import com.sbrf.idrisov.interpritator.entitys.table.metainfo.MetaInfoRow;
+import com.sbrf.idrisov.interpritator.entitys.table.metainfo.RowMetaInfo;
 import com.sbrf.idrisov.interpritator.services.FreemarkerService;
 import lombok.Getter;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
@@ -19,7 +19,7 @@ public class RowLogicalBlock {
 
     @Getter
     private final List<RowForTransform> rows;
-    private final MetaInfoRow meta;
+    private final RowMetaInfo meta;
     private boolean haveMeta = false;
 
     @Autowired
@@ -29,17 +29,17 @@ public class RowLogicalBlock {
     private TableToRowLogicalBlockConverter tableToRowLogicalBlockConverter;
 
     @Lookup
-    public RowLogicalBlock getRowBlock(List<RowForTransform> rows, MetaInfoRow meta, boolean haveMeta) {return null;}
+    public RowLogicalBlock getRowLogicalBlock(List<RowForTransform> rows, RowMetaInfo meta, boolean haveMeta) {return null;}
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public RowLogicalBlock(List<RowForTransform> rows, MetaInfoRow meta, boolean haveMeta) {
+    public RowLogicalBlock(List<RowForTransform> rows, RowMetaInfo meta, boolean haveMeta) {
         this.rows = rows;
         this.meta = meta;
         this.haveMeta = haveMeta;
     }
 
     public void transform(Map<String, Object> model) {
-        String needToRenderProcessed = freemarkerService.getProcessedText(meta.getNeedToRender(), model);
+        String needToRenderProcessed = freemarkerService.getProcessedText(meta.getNeedToRenderCondition(), model);
         if (!Boolean.parseBoolean(needToRenderProcessed)) {
             removeRowBlock();
             return;
@@ -62,7 +62,7 @@ public class RowLogicalBlock {
 
             addValuesToRows(values[0]);
 
-            RowLogicalBlock rowLogicalBlock = getRowBlock(rows, new MetaInfoRow(), haveMeta);
+            RowLogicalBlock rowLogicalBlock = getRowLogicalBlock(rows, new RowMetaInfo(), haveMeta);
             rowLogicalBlock.transform(model);
 
             reTransform(model, rowLogicalBlock);
@@ -94,7 +94,7 @@ public class RowLogicalBlock {
             newRows.addFirst(rows.get(i).copyRow(positionAfterThis));
         }
 
-        return getRowBlock(new ArrayList<>(newRows), new MetaInfoRow(), haveMeta);
+        return getRowLogicalBlock(new ArrayList<>(newRows), new RowMetaInfo(), haveMeta);
     }
 
     private String getProcessedLoopCondition(Map<String, Object> model) {
