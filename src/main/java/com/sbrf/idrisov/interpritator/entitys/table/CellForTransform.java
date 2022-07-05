@@ -1,8 +1,8 @@
-package com.sbrf.idrisov.interpritator.entity.table;
+package com.sbrf.idrisov.interpritator.entitys.table;
 
-import com.sbrf.idrisov.interpritator.DocumentToBodyBlockConverter;
-import com.sbrf.idrisov.interpritator.SquashParagraphsService;
-import com.sbrf.idrisov.interpritator.entity.RootBlock;
+import com.sbrf.idrisov.interpritator.converters.DocumentToBodyBlockConverter;
+import com.sbrf.idrisov.interpritator.entitys.RootBlock;
+import com.sbrf.idrisov.interpritator.services.SquashParagraphsService;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;

@@ -1,8 +1,8 @@
-package com.sbrf.idrisov.interpritator.entity.table;
+package com.sbrf.idrisov.interpritator.entitys.table;
 
-import com.sbrf.idrisov.interpritator.FreemarkerService;
-import com.sbrf.idrisov.interpritator.TableToRowBlockConverter;
-import com.sbrf.idrisov.interpritator.entity.RootBlock;
+import com.sbrf.idrisov.interpritator.converters.TableToRowBlockConverter;
+import com.sbrf.idrisov.interpritator.entitys.RootBlock;
+import com.sbrf.idrisov.interpritator.services.FreemarkerService;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;

@@ -1,4 +1,4 @@
-package com.sbrf.idrisov.interpritator;
+package com.sbrf.idrisov.interpritator.utils;
 
 import org.apache.poi.xwpf.usermodel.*;
 

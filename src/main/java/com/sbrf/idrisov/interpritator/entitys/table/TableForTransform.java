@@ -1,7 +1,7 @@
-package com.sbrf.idrisov.interpritator.entity.table;
+package com.sbrf.idrisov.interpritator.entitys.table;
 
-import com.sbrf.idrisov.interpritator.FreemarkerService;
-import com.sbrf.idrisov.interpritator.TableToRowBlockConverter;
+import com.sbrf.idrisov.interpritator.converters.TableToRowBlockConverter;
+import com.sbrf.idrisov.interpritator.services.FreemarkerService;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.sbrf.idrisov.interpritator.ParagraphUtils.getPosOfBodyElement;
+import static com.sbrf.idrisov.interpritator.utils.ParagraphUtils.getPosOfBodyElement;
 
 @Component
 @Scope("prototype")

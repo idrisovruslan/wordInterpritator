@@ -1,8 +1,8 @@
-package com.sbrf.idrisov.interpritator;
+package com.sbrf.idrisov.interpritator.converters;
 
-import com.sbrf.idrisov.interpritator.entity.RootBlock;
-import com.sbrf.idrisov.interpritator.entity.paragraph.ParagraphsBlock;
-import com.sbrf.idrisov.interpritator.entity.table.TableBlock;
+import com.sbrf.idrisov.interpritator.entitys.RootBlock;
+import com.sbrf.idrisov.interpritator.entitys.paragraph.ParagraphsBlock;
+import com.sbrf.idrisov.interpritator.entitys.table.TableBlock;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Service;

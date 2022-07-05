@@ -1,7 +1,7 @@
-package com.sbrf.idrisov.interpritator.entity.paragraph;
+package com.sbrf.idrisov.interpritator.entitys.paragraph;
 
-import com.sbrf.idrisov.interpritator.ParagraphUtils;
-import com.sbrf.idrisov.interpritator.RunUtils;
+import com.sbrf.idrisov.interpritator.utils.ParagraphUtils;
+import com.sbrf.idrisov.interpritator.utils.RunUtils;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.xmlbeans.XmlCursor;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.sbrf.idrisov.interpritator.ParagraphUtils.removeRumMetaInfo;
+import static com.sbrf.idrisov.interpritator.utils.ParagraphUtils.removeRumMetaInfo;
 
 public class ParagraphForTransform {
 

@@ -1,6 +1,6 @@
-package com.sbrf.idrisov.interpritator.entity.table;
+package com.sbrf.idrisov.interpritator.entitys.table;
 
-import com.sbrf.idrisov.interpritator.RowUtils;
+import com.sbrf.idrisov.interpritator.utils.RowUtils;
 import lombok.Getter;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFTable;

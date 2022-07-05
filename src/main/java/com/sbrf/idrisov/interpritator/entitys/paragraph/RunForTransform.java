@@ -1,4 +1,4 @@
-package com.sbrf.idrisov.interpritator.entity.paragraph;
+package com.sbrf.idrisov.interpritator.entitys.paragraph;
 
 import lombok.Getter;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.sbrf.idrisov.interpritator.ParagraphUtils.removeRumMetaInfo;
+import static com.sbrf.idrisov.interpritator.utils.ParagraphUtils.removeRumMetaInfo;
 
 @Getter
 public class RunForTransform {

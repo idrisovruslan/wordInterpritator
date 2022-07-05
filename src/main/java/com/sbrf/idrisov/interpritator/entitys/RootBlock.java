@@ -1,4 +1,4 @@
-package com.sbrf.idrisov.interpritator.entity;
+package com.sbrf.idrisov.interpritator.entitys;
 
 import java.util.Map;
 

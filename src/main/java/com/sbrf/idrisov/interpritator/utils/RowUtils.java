@@ -1,12 +1,8 @@
-package com.sbrf.idrisov.interpritator;
+package com.sbrf.idrisov.interpritator.utils;
 
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
 
 import java.util.List;
-import java.util.Objects;
 
 //TODO проксю запели или что то типа того
 public class RowUtils {
