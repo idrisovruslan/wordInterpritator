@@ -1,4 +1,4 @@
-package com.sbrf.idrisov.interpritator.utils;
+package com.sbrf.idrisov.interpritator.util;
 
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 

@@ -1,4 +1,4 @@
-package com.sbrf.idrisov.interpritator.services;
+package com.sbrf.idrisov.interpritator.service;
 
 import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;

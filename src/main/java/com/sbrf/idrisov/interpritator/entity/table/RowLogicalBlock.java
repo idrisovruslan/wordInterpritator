@@ -1,8 +1,8 @@
-package com.sbrf.idrisov.interpritator.entitys.table;
+package com.sbrf.idrisov.interpritator.entity.table;
 
-import com.sbrf.idrisov.interpritator.converters.TableToRowLogicalBlockConverter;
-import com.sbrf.idrisov.interpritator.entitys.table.metainfo.RowMetaInfo;
-import com.sbrf.idrisov.interpritator.services.FreemarkerService;
+import com.sbrf.idrisov.interpritator.converter.TableToRowLogicalBlockConverter;
+import com.sbrf.idrisov.interpritator.entity.table.metainfo.RowMetaInfo;
+import com.sbrf.idrisov.interpritator.service.FreemarkerService;
 import lombok.Getter;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.springframework.beans.factory.annotation.Autowired;

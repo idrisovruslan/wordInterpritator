@@ -1,7 +1,7 @@
-package com.sbrf.idrisov.interpritator.entitys.paragraph;
+package com.sbrf.idrisov.interpritator.entity.paragraph;
 
-import com.sbrf.idrisov.interpritator.entitys.BodyBlock;
-import com.sbrf.idrisov.interpritator.services.FreemarkerService;
+import com.sbrf.idrisov.interpritator.entity.BodyBlock;
+import com.sbrf.idrisov.interpritator.service.FreemarkerService;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +13,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.sbrf.idrisov.interpritator.utils.ParagraphUtils.removeParagraphOnDocument;
-import static com.sbrf.idrisov.interpritator.utils.RunUtils.isEquals;
+import static com.sbrf.idrisov.interpritator.util.ParagraphUtils.removeParagraphOnDocument;
+import static com.sbrf.idrisov.interpritator.util.RunUtils.isEquals;
 
 @Component
 @Scope("prototype")

@@ -1,4 +1,4 @@
-package com.sbrf.idrisov.interpritator.entitys.table.metainfo;
+package com.sbrf.idrisov.interpritator.entity.table.metainfo;
 
 import lombok.Getter;
 

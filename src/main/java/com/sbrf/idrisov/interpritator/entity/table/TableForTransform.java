@@ -1,8 +1,8 @@
-package com.sbrf.idrisov.interpritator.entitys.table;
+package com.sbrf.idrisov.interpritator.entity.table;
 
-import com.sbrf.idrisov.interpritator.converters.TableToRowLogicalBlockConverter;
-import com.sbrf.idrisov.interpritator.entitys.table.metainfo.TableMetaInfo;
-import com.sbrf.idrisov.interpritator.services.FreemarkerService;
+import com.sbrf.idrisov.interpritator.converter.TableToRowLogicalBlockConverter;
+import com.sbrf.idrisov.interpritator.entity.table.metainfo.TableMetaInfo;
+import com.sbrf.idrisov.interpritator.service.FreemarkerService;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
-import static com.sbrf.idrisov.interpritator.utils.ParagraphUtils.getPosOfBodyElement;
+import static com.sbrf.idrisov.interpritator.util.ParagraphUtils.getPosOfBodyElement;
 
 @Component
 @Scope("prototype")

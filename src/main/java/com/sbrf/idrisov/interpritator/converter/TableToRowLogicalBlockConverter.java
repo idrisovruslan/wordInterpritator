@@ -1,8 +1,8 @@
-package com.sbrf.idrisov.interpritator.converters;
+package com.sbrf.idrisov.interpritator.converter;
 
-import com.sbrf.idrisov.interpritator.entitys.table.RowForTransform;
-import com.sbrf.idrisov.interpritator.entitys.table.RowLogicalBlock;
-import com.sbrf.idrisov.interpritator.entitys.table.metainfo.RowMetaInfo;
+import com.sbrf.idrisov.interpritator.entity.table.RowForTransform;
+import com.sbrf.idrisov.interpritator.entity.table.RowLogicalBlock;
+import com.sbrf.idrisov.interpritator.entity.table.metainfo.RowMetaInfo;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static com.sbrf.idrisov.interpritator.entitys.table.metainfo.RowMetaInfo.*;
-import static com.sbrf.idrisov.interpritator.utils.RowUtils.getPosOfRow;
+import static com.sbrf.idrisov.interpritator.entity.table.metainfo.RowMetaInfo.*;
+import static com.sbrf.idrisov.interpritator.util.RowUtils.getPosOfRow;
 
 @Service
 public class TableToRowLogicalBlockConverter {

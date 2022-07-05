@@ -1,4 +1,4 @@
-package com.sbrf.idrisov.interpritator.services;
+package com.sbrf.idrisov.interpritator.service;
 
 import org.apache.poi.xwpf.usermodel.*;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.sbrf.idrisov.interpritator.utils.ParagraphUtils.removeParagraphOnDocument;
-import static com.sbrf.idrisov.interpritator.utils.RunUtils.copyPropertiesFromTo;
-import static com.sbrf.idrisov.interpritator.utils.RunUtils.removeFirstSymbol;
+import static com.sbrf.idrisov.interpritator.util.ParagraphUtils.removeParagraphOnDocument;
+import static com.sbrf.idrisov.interpritator.util.RunUtils.copyPropertiesFromTo;
+import static com.sbrf.idrisov.interpritator.util.RunUtils.removeFirstSymbol;
 
 //TODO Refactor
 @Service

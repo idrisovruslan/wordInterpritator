@@ -1,7 +1,7 @@
-package com.sbrf.idrisov.interpritator.services;
+package com.sbrf.idrisov.interpritator.service;
 
-import com.sbrf.idrisov.interpritator.converters.IBodyToBodyBlockConverter;
-import com.sbrf.idrisov.interpritator.entitys.BodyBlock;
+import com.sbrf.idrisov.interpritator.converter.IBodyToBodyBlockConverter;
+import com.sbrf.idrisov.interpritator.entity.BodyBlock;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFFooter;
 import org.apache.poi.xwpf.usermodel.XWPFHeader;

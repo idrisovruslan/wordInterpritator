@@ -1,6 +1,6 @@
 package com.sbrf.idrisov.interpritator;
 
-import com.sbrf.idrisov.interpritator.services.DocumentTransformerService;
+import com.sbrf.idrisov.interpritator.service.DocumentTransformerService;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;

@@ -1,7 +1,7 @@
-package com.sbrf.idrisov.interpritator.entitys.table;
+package com.sbrf.idrisov.interpritator.entity.table;
 
-import com.sbrf.idrisov.interpritator.entitys.BodyBlock;
-import com.sbrf.idrisov.interpritator.entitys.table.metainfo.TableMetaInfo;
+import com.sbrf.idrisov.interpritator.entity.BodyBlock;
+import com.sbrf.idrisov.interpritator.entity.table.metainfo.TableMetaInfo;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.apache.xmlbeans.impl.values.XmlValueDisconnectedException;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
-import static com.sbrf.idrisov.interpritator.entitys.table.metainfo.TableMetaInfo.isTableMetaInfo;
+import static com.sbrf.idrisov.interpritator.entity.table.metainfo.TableMetaInfo.isTableMetaInfo;
 
 @Component
 @Scope("prototype")
