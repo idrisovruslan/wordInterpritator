@@ -132,7 +132,7 @@ public class ParagraphsBlock implements BodyBlock {
         return sb.toString();
     }
 
-    public static void squashRuns(XWPFParagraph paragraph) {
+    public void squashRuns(XWPFParagraph paragraph) {
         List<XWPFRun> runs = paragraph.getRuns();
         Deque<Integer> runsToRemove = new LinkedList<>();
 
