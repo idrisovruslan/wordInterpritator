@@ -1,8 +1,8 @@
 package com.sbrf.idrisov.interpritator.converters;
 
-import com.sbrf.idrisov.interpritator.entitys.table.MetaInfoRow;
-import com.sbrf.idrisov.interpritator.entitys.table.RowBlock;
 import com.sbrf.idrisov.interpritator.entitys.table.RowForTransform;
+import com.sbrf.idrisov.interpritator.entitys.table.RowLogicalBlock;
+import com.sbrf.idrisov.interpritator.entitys.table.metainfo.MetaInfoRow;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -10,37 +10,37 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static com.sbrf.idrisov.interpritator.entitys.table.MetaInfoRow.*;
+import static com.sbrf.idrisov.interpritator.entitys.table.metainfo.MetaInfoRow.*;
 import static com.sbrf.idrisov.interpritator.utils.RowUtils.getPosOfRow;
 
 @Service
-public class TableToRowBlockConverter {
+public class TableToRowLogicalBlockConverter {
 
     @Lookup
-    public RowBlock getRowBlock(List<RowForTransform> rows, MetaInfoRow meta, boolean haveMeta) {return null;}
+    public RowLogicalBlock getRowBlock(List<RowForTransform> rows, MetaInfoRow meta, boolean haveMeta) {return null;}
 
     @Lookup
     public RowForTransform getRowForTransform(XWPFTableRow row) {return null;}
 
-    public List<RowBlock> getRowBlocks(XWPFTable table, Map<String, Object> model) {
+    public List<RowLogicalBlock> getRowBlocks(XWPFTable table, Map<String, Object> model) {
         List<XWPFTableRow> rows = new ArrayList<>(table.getRows());
-        List<RowBlock> rowBlocks = getRowBlocks(table, rows, model);
-        return rowBlocks;
+        List<RowLogicalBlock> rowLogicalBlocks = getRowBlocks(table, rows, model);
+        return rowLogicalBlocks;
     }
 
-    public List<RowBlock> getRowBlocks(List<XWPFTableRow> rows, Map<String, Object> model) {
+    public List<RowLogicalBlock> getRowBlocks(List<XWPFTableRow> rows, Map<String, Object> model) {
 
         if (rows.isEmpty()) {
             throw new RuntimeException();
         }
 
         XWPFTable table = rows.get(0).getTable();
-        List<RowBlock> rowBlocks = getRowBlocks(table, rows, model);
-        return rowBlocks;
+        List<RowLogicalBlock> rowLogicalBlocks = getRowBlocks(table, rows, model);
+        return rowLogicalBlocks;
     }
 
-    private List<RowBlock> getRowBlocks(XWPFTable table, List<XWPFTableRow> rows, Map<String, Object> model) {
-        List<RowBlock> blocks = new ArrayList<>();
+    private List<RowLogicalBlock> getRowBlocks(XWPFTable table, List<XWPFTableRow> rows, Map<String, Object> model) {
+        List<RowLogicalBlock> blocks = new ArrayList<>();
 
         List<RowForTransform> temp = new ArrayList<>();
         MetaInfoRow meta = new MetaInfoRow();

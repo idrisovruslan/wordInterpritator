@@ -1,10 +1,9 @@
 package com.sbrf.idrisov.interpritator.entitys.table;
 
-import com.sbrf.idrisov.interpritator.converters.TableToRowBlockConverter;
-import com.sbrf.idrisov.interpritator.entitys.RootBlock;
+import com.sbrf.idrisov.interpritator.converters.TableToRowLogicalBlockConverter;
+import com.sbrf.idrisov.interpritator.entitys.table.metainfo.MetaInfoRow;
 import com.sbrf.idrisov.interpritator.services.FreemarkerService;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
@@ -16,31 +15,29 @@ import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
-public class RowBlock implements RootBlock {
+public class RowLogicalBlock {
 
     @Getter
     private final List<RowForTransform> rows;
-    private MetaInfoRow meta;
-    @Setter
+    private final MetaInfoRow meta;
     private boolean haveMeta = false;
 
     @Autowired
     private FreemarkerService freemarkerService;
 
-    @Lookup
-    public RowBlock getRowBlock(List<RowForTransform> rows, MetaInfoRow meta, boolean haveMeta) {return null;}
-
     @Autowired
-    private TableToRowBlockConverter tableToRowBlockConverter;
+    private TableToRowLogicalBlockConverter tableToRowLogicalBlockConverter;
+
+    @Lookup
+    public RowLogicalBlock getRowBlock(List<RowForTransform> rows, MetaInfoRow meta, boolean haveMeta) {return null;}
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    public RowBlock(List<RowForTransform> rows, MetaInfoRow meta, boolean haveMeta) {
+    public RowLogicalBlock(List<RowForTransform> rows, MetaInfoRow meta, boolean haveMeta) {
         this.rows = rows;
         this.meta = meta;
         this.haveMeta = haveMeta;
     }
 
-    @Override
     public void transform(Map<String, Object> model) {
         String needToRenderProcessed = freemarkerService.getProcessedText(meta.getNeedToRender(), model);
         if (!Boolean.parseBoolean(needToRenderProcessed)) {
@@ -56,33 +53,39 @@ public class RowBlock implements RootBlock {
             String[] values = processedLoopCondition.split("\\n");
 
             for (int i = values.length - 1; i > 0; i--) {
-                RowBlock newRowBlock = copyRowBlockAfterThis();
-                newRowBlock.addValuesToRows(values[i]);
-                newRowBlock.transform(model);
+                RowLogicalBlock newRowLogicalBlock = copyRowBlockAfterThis();
+                newRowLogicalBlock.addValuesToRows(values[i]);
+                newRowLogicalBlock.transform(model);
 
-                reRander(model, newRowBlock);
+                reTransform(model, newRowLogicalBlock);
             }
 
             addValuesToRows(values[0]);
 
-            RowBlock rowBlock = getRowBlock(rows, new MetaInfoRow(), haveMeta);
-            rowBlock.transform(model);
+            RowLogicalBlock rowLogicalBlock = getRowBlock(rows, new MetaInfoRow(), haveMeta);
+            rowLogicalBlock.transform(model);
 
-            reRander(model, rowBlock);
+            reTransform(model, rowLogicalBlock);
         }
     }
 
-    private void reRander(Map<String, Object> model, RowBlock newRowBlock) {
-        List<XWPFTableRow> rows = newRowBlock.getRows().stream().map(RowForTransform::getRow).collect(Collectors.toList());
-        List<RowBlock> nestedRowBlocks = tableToRowBlockConverter.getRowBlocks(rows, model);
-        nestedRowBlocks.forEach(nestedRowBlock -> nestedRowBlock.transform(model));
+    /**
+     * на случай многоуровневых циклов
+     * @param model модель данных
+     * @param newRowLogicalBlock полученный блок после раскрытия внешнего цикла
+     */
+
+    private void reTransform(Map<String, Object> model, RowLogicalBlock newRowLogicalBlock) {
+        List<XWPFTableRow> rows = newRowLogicalBlock.getRows().stream().map(RowForTransform::getRow).collect(Collectors.toList());
+        List<RowLogicalBlock> nestedRowLogicalBlocks = tableToRowLogicalBlockConverter.getRowBlocks(rows, model);
+        nestedRowLogicalBlocks.forEach(nestedRowLogicalBlock -> nestedRowLogicalBlock.transform(model));
     }
 
     private void addValuesToRows(String values) {
         rows.forEach(rowForTransform -> rowForTransform.addVariablesValue(values));
     }
 
-    private RowBlock copyRowBlockAfterThis() {
+    private RowLogicalBlock copyRowBlockAfterThis() {
         Deque<RowForTransform> newRows = new LinkedList<>();
 
         int positionAfterThis = rows.get(rows.size() - 1).getPosOfRow() + 1;

@@ -1,12 +1,9 @@
 package com.sbrf.idrisov.interpritator.entitys.table;
 
-import com.sbrf.idrisov.interpritator.converters.DocumentToBodyBlockConverter;
-import com.sbrf.idrisov.interpritator.entitys.RootBlock;
-import com.sbrf.idrisov.interpritator.services.SquashParagraphsService;
+import com.sbrf.idrisov.interpritator.entitys.BodyBlock;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.apache.xmlbeans.impl.values.XmlValueDisconnectedException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -18,26 +15,19 @@ import java.util.regex.Pattern;
 
 @Component
 @Scope("prototype")
-public class TableBlock implements RootBlock {
+public class TableBlock implements BodyBlock {
 
     private final List<XWPFTable> tables;
 
     @Lookup
     public TableForTransform getTableForTransform(XWPFTable table, String meta) {return null;}
 
-    @Autowired
-    private DocumentToBodyBlockConverter documentToBodyBlockConverter;
-
-    @Autowired
-    private SquashParagraphsService squashParagraphsService;
-
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     public TableBlock(List<XWPFTable> tables) {
         this.tables = tables;
     }
 
     @Override
-    public void transform(Map<String, Object> model) {
+    public void transformBlock(Map<String, Object> model) {
         for (XWPFTable table : tables) {
             String meta = "";
 

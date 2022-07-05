@@ -14,7 +14,7 @@ import static com.sbrf.idrisov.interpritator.utils.RunUtils.removeFirstSymbol;
 @Service
 public class SquashParagraphsService {
 
-    private final char squashChar = '&';
+    private static final char SQUASH_CHAR = '&';
 
     public void squashParagraphs(XWPFDocument document) {
         List<IBodyElement> bodyElements = document.getBodyElements();
@@ -38,7 +38,7 @@ public class SquashParagraphsService {
 
                 removeTabs(nextParagraph);
 
-                if (nextParagraph.getText().length() != 0 && nextParagraph.getText().charAt(0) == squashChar) {
+                if (nextParagraph.getText().length() != 0 && nextParagraph.getText().charAt(0) == SQUASH_CHAR) {
                     addNextParagraphToPrevious(paragraph, nextParagraph);
                     removeParagraphOnDocument(nextParagraph);
                 }

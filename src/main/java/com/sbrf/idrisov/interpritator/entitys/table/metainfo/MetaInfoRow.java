@@ -1,4 +1,4 @@
-package com.sbrf.idrisov.interpritator.entitys.table;
+package com.sbrf.idrisov.interpritator.entitys.table.metainfo;
 
 import lombok.Getter;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;

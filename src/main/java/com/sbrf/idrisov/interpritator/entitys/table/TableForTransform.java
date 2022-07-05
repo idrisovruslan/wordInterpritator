@@ -1,6 +1,6 @@
 package com.sbrf.idrisov.interpritator.entitys.table;
 
-import com.sbrf.idrisov.interpritator.converters.TableToRowBlockConverter;
+import com.sbrf.idrisov.interpritator.converters.TableToRowLogicalBlockConverter;
 import com.sbrf.idrisov.interpritator.services.FreemarkerService;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
@@ -27,7 +27,7 @@ public class TableForTransform {
     private FreemarkerService freemarkerService;
 
     @Autowired
-    private TableToRowBlockConverter tableToRowBlockConverter;
+    private TableToRowLogicalBlockConverter tableToRowLogicalBlockConverter;
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     public TableForTransform(XWPFTable table, String meta) {
@@ -42,9 +42,9 @@ public class TableForTransform {
             return;
         }
 
-        List<RowBlock> blocks = tableToRowBlockConverter.getRowBlocks(table, model);
+        List<RowLogicalBlock> blocks = tableToRowLogicalBlockConverter.getRowBlocks(table, model);
 
-        blocks.forEach(rowBlock -> rowBlock.transform(model));
+        blocks.forEach(rowLogicalBlock -> rowLogicalBlock.transform(model));
     }
 
     private boolean needToRender(Map<String, Object> model) {

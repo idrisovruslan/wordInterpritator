@@ -40,7 +40,8 @@ public class ParagraphForTransform {
     
     private List<TextByRuns> getParagraphsTextsFromRunsMeta() {
         List<TextByRuns> textByRunsList = new ArrayList<>();
-        //TODO баг если несколько параграфов в цикле(надо объединять текст не по параграфам, а по блокам)
+        //TODO баг(не верный порядок параграфов из за цикла)
+        // если несколько параграфов в цикле(надо объединять текст не по параграфам, а по блокам)
         //сперва последний ибо XmlCursor(с его помощью инсертим копию параграфа) ставит перед вызывающим параграфом
         textByRunsList.add(new TextByRuns(paragraph, processedTexts.get(processedTexts.size() - 1)));
 

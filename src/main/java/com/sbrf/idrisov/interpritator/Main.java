@@ -1,6 +1,6 @@
 package com.sbrf.idrisov.interpritator;
 
-import com.sbrf.idrisov.interpritator.services.DocumentGeneratorService;
+import com.sbrf.idrisov.interpritator.services.DocumentTransformerService;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -15,11 +15,11 @@ import java.util.Map;
 @SpringBootApplication
 public class Main implements CommandLineRunner {
 
-    private final DocumentGeneratorService documentGeneratorService;
+    private final DocumentTransformerService documentTransformerService;
 
     @Autowired
-    public Main(DocumentGeneratorService documentGeneratorService) {
-        this.documentGeneratorService = documentGeneratorService;
+    public Main(DocumentTransformerService documentTransformerService) {
+        this.documentTransformerService = documentTransformerService;
     }
 
     public static void main(String[] args) {
@@ -31,9 +31,10 @@ public class Main implements CommandLineRunner {
         Map<String, Object> objectMap = new HashMap<>();
         objectMap.put("fileName", freemarker.ext.dom.NodeModel.parse(new File("src/main/resources/mockSource2.xml")));
 
-        XWPFDocument document = documentGeneratorService.generate(objectMap, sourceDocxFile);
+        XWPFDocument document = documentTransformerService.generate(objectMap, sourceDocxFile);
 
         FileOutputStream out = new FileOutputStream("src/main/resources/result.docx");
         document.write(out);
+        document.close();
     }
 }

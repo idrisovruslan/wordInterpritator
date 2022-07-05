@@ -1,6 +1,6 @@
 package com.sbrf.idrisov.interpritator.converters;
 
-import com.sbrf.idrisov.interpritator.entitys.RootBlock;
+import com.sbrf.idrisov.interpritator.entitys.BodyBlock;
 import com.sbrf.idrisov.interpritator.entitys.paragraph.ParagraphsBlock;
 import com.sbrf.idrisov.interpritator.entitys.table.TableBlock;
 import org.apache.poi.xwpf.usermodel.*;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class DocumentToBodyBlockConverter {
+public class IBodyToBodyBlockConverter {
 
     @Lookup
     public ParagraphsBlock getParagraphsBlock(List<? extends IBodyElement> paragraphsToTransform) {return null;}
@@ -19,23 +19,23 @@ public class DocumentToBodyBlockConverter {
     @Lookup
     public TableBlock getTableBlock(List<? extends IBodyElement> tables) {return null;}
 
-    public List<RootBlock> generateBlocksForTransform(XWPFDocument document) {
+    public List<BodyBlock> generateBodyBlocks(XWPFDocument document) {
         List<IBodyElement> bodyElements = document.getBodyElements();
-        return generateBlocksForTransform(bodyElements);
+        return splitParagraphsAndTablesByBlocks(bodyElements);
     }
 
-    public List<RootBlock> generateBlocksForTransform(XWPFTableCell cell) {
+    public List<BodyBlock> generateBodyBlocks(XWPFTableCell cell) {
         List<IBodyElement> bodyElements = cell.getBodyElements();
-        return generateBlocksForTransform(bodyElements);
+        return splitParagraphsAndTablesByBlocks(bodyElements);
     }
 
-    public List<RootBlock> generateBlocksForTransform(XWPFHeaderFooter headerFooter) {
+    public List<BodyBlock> generateBodyBlocks(XWPFHeaderFooter headerFooter) {
         List<IBodyElement> bodyElements = headerFooter.getBodyElements();
-        return generateBlocksForTransform(bodyElements);
+        return splitParagraphsAndTablesByBlocks(bodyElements);
     }
 
-    private List<RootBlock> generateBlocksForTransform(List<IBodyElement> bodyElements) {
-        List<RootBlock> blocksForTransform = new ArrayList<>();
+    private List<BodyBlock> splitParagraphsAndTablesByBlocks(List<IBodyElement> bodyElements) {
+        List<BodyBlock> blocksForTransform = new ArrayList<>();
 
         List<IBodyElement> temp = new ArrayList<>();
 
@@ -43,7 +43,7 @@ public class DocumentToBodyBlockConverter {
             if (bodyElements.get(i) instanceof XWPFParagraph) {
                 XWPFParagraph paragraph = (XWPFParagraph) bodyElements.get(i);
 
-                if (!temp.isEmpty() && (!(temp.get(temp.size() - 1) instanceof XWPFParagraph))) {
+                if (!temp.isEmpty() && lastElementIsNotParagraph(temp)) {
                     blocksForTransform.add(getTableBlock(temp));
                     temp = new ArrayList<>();
                 }
@@ -57,7 +57,7 @@ public class DocumentToBodyBlockConverter {
             } else if (bodyElements.get(i) instanceof XWPFTable){
                 XWPFTable table = (XWPFTable) bodyElements.get(i);
 
-                if (!temp.isEmpty() && (!(temp.get(temp.size() - 1) instanceof XWPFTable))) {
+                if (!temp.isEmpty() && lastElementIsNotTable(temp)) {
                     blocksForTransform.add(getParagraphsBlock(temp));
                     temp = new ArrayList<>();
                 }
@@ -73,5 +73,13 @@ public class DocumentToBodyBlockConverter {
         }
 
         return blocksForTransform;
+    }
+
+    private boolean lastElementIsNotTable(List<IBodyElement> temp) {
+        return !(temp.get(temp.size() - 1) instanceof XWPFTable);
+    }
+
+    private boolean lastElementIsNotParagraph(List<IBodyElement> temp) {
+        return !(temp.get(temp.size() - 1) instanceof XWPFParagraph);
     }
 }

@@ -1,6 +1,6 @@
 package com.sbrf.idrisov.interpritator.entitys.paragraph;
 
-import com.sbrf.idrisov.interpritator.entitys.RootBlock;
+import com.sbrf.idrisov.interpritator.entitys.BodyBlock;
 import com.sbrf.idrisov.interpritator.services.FreemarkerService;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
@@ -18,7 +18,7 @@ import static com.sbrf.idrisov.interpritator.utils.RunUtils.isEquals;
 
 @Component
 @Scope("prototype")
-public class ParagraphsBlock implements RootBlock {
+public class ParagraphsBlock implements BodyBlock {
 
     @Autowired
     private FreemarkerService freemarkerService;
@@ -30,7 +30,7 @@ public class ParagraphsBlock implements RootBlock {
     }
 
     @Override
-    public void transform(Map<String, Object> model) {
+    public void transformBlock(Map<String, Object> model) {
         String blockText = getBlockTextWithMeta();
         String processedText = freemarkerService.getProcessedText(blockText, model);
 

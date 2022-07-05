@@ -1,7 +1,7 @@
 package com.sbrf.idrisov.interpritator.entitys.table;
 
-import com.sbrf.idrisov.interpritator.converters.DocumentToBodyBlockConverter;
-import com.sbrf.idrisov.interpritator.entitys.RootBlock;
+import com.sbrf.idrisov.interpritator.converters.IBodyToBodyBlockConverter;
+import com.sbrf.idrisov.interpritator.entitys.BodyBlock;
 import com.sbrf.idrisov.interpritator.services.SquashParagraphsService;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class CellForTransform {
     private final XWPFTableCell cell;
 
     @Autowired
-    private DocumentToBodyBlockConverter documentToBodyBlockConverter;
+    private IBodyToBodyBlockConverter IBodyToBodyBlockConverter;
 
     @Autowired
     private SquashParagraphsService squashParagraphsService;
@@ -29,10 +29,10 @@ public class CellForTransform {
     }
 
     public void transform(Map<String, Object> model) {
-        List<RootBlock> paragraphsBlocks = documentToBodyBlockConverter
-                .generateBlocksForTransform(cell);
+        List<BodyBlock> paragraphsBlocks = IBodyToBodyBlockConverter
+                .generateBodyBlocks(cell);
 
-        paragraphsBlocks.forEach(paragraphsBlock -> paragraphsBlock.transform(model));
+        paragraphsBlocks.forEach(paragraphsBlock -> paragraphsBlock.transformBlock(model));
 
         squashParagraphsService.squashParagraphs(cell);
     }
