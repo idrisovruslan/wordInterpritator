@@ -1,13 +1,14 @@
 package com.sbrf.idrisov.interpritator.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 
 import java.util.List;
 
 //TODO проксю запели или что то типа того
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RowUtils {
-    private RowUtils() {
-    }
 
     public static int getPosOfRow(XWPFTableRow row) {
         List<XWPFTableRow> tableRows = row.getTable().getRows();

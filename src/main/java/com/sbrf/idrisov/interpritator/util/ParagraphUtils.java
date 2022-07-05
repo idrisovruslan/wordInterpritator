@@ -1,13 +1,14 @@
 package com.sbrf.idrisov.interpritator.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.poi.xwpf.usermodel.*;
 
 import java.util.List;
 
 //TODO проксю запели или что то типа того
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ParagraphUtils {
-    private ParagraphUtils() {
-    }
 
     public static String removeRumMetaInfo(String paragraphText) {
         return paragraphText.replaceAll("\\{MetaInfoRun: .*?}", "");

@@ -1,5 +1,7 @@
 package com.sbrf.idrisov.interpritator.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
@@ -7,9 +9,8 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
 import java.util.Objects;
 
 //TODO проксю запели или что то типа того
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RunUtils {
-    private RunUtils() {
-    }
 
     public static void copyPropertiesFromTo(XWPFRun run, XWPFRun newRun) {
         CTRPr rPr = newRun.getCTR().isSetRPr() ? newRun.getCTR().getRPr() : newRun.getCTR().addNewRPr();

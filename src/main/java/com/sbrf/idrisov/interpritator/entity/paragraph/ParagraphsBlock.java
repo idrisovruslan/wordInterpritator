@@ -9,10 +9,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.sbrf.idrisov.interpritator.util.ParagraphMetaInfoUtils.*;
 import static com.sbrf.idrisov.interpritator.util.ParagraphUtils.removeParagraphOnDocument;
 import static com.sbrf.idrisov.interpritator.util.RunUtils.isEquals;
 
@@ -64,52 +63,38 @@ public class ParagraphsBlock implements BodyBlock {
         return result;
     }
 
-    private Map<Integer, List<String>> parseTextsByParagraphs(String[] paragraphsText) {
+    private Map<Integer, List<String>> parseTextsByParagraphs(String[] paragraphsTexts) {
         Map<Integer, List<String>> paragraphToTextsMap = new HashMap<>();
         ArrayList<String> tempTexts = new ArrayList<>();
 
-        for (int i = 0; i < paragraphsText.length; i++) {
-            //TODO вынестри объект MetaInfoParagraph
-            Pattern pattern = Pattern.compile("\\{MetaInfoParagraph: .*?}$");
-            Matcher matcher = pattern.matcher(paragraphsText[i]);
+        for (int i = 0; i < paragraphsTexts.length; i++) {
+            String paragraphText = paragraphsTexts[i];
 
-            if (matcher.find()) {
-                String metaInfoParagraph = matcher.group(0);
-                String result = matcher.replaceFirst("");
+            if (containsParagraphMetaInfo(paragraphText)) {
+                String processedText = removeParagraphMetaInfo(paragraphText);
 
                 ArrayList<String> texts;
                 if (tempTexts.isEmpty()) {
                     texts = new ArrayList<>();
-                    texts.add(result);
+                    texts.add(processedText);
                 } else {
-                    texts = tempTexts.stream().map(text -> text + result).collect(Collectors.toCollection(ArrayList::new));
+                    texts = tempTexts.stream().map(text -> text + processedText).collect(Collectors.toCollection(ArrayList::new));
                     tempTexts = new ArrayList<>();
-                    texts.add(result);
+                    texts.add(processedText);
                 }
 
-                if (paragraphToTextsMap.containsKey(getNumOfParagraph(metaInfoParagraph))) {
-                    paragraphToTextsMap.get(getNumOfParagraph(metaInfoParagraph)).addAll(texts);
+                if (paragraphToTextsMap.containsKey(getSerialNumberOfParagraphFromParagraphText(paragraphText))) {
+                    paragraphToTextsMap.get(getSerialNumberOfParagraphFromParagraphText(paragraphText)).addAll(texts);
                 } else {
-                    paragraphToTextsMap.put(getNumOfParagraph(metaInfoParagraph), texts);
+                    paragraphToTextsMap.put(getSerialNumberOfParagraphFromParagraphText(paragraphText), texts);
                 }
             } else {
                 //Если пусто, значит мета инфы нет(это возможно например при дерективе list) тогда мету берем из следующего пункта с текстом
-                tempTexts.add(paragraphsText[i]);
+                tempTexts.add(paragraphsTexts[i]);
             }
 
         }
         return paragraphToTextsMap;
-    }
-
-    private Integer getNumOfParagraph(String meta) {
-        //TODO вынестри объект MetaInfoParagraph
-        Pattern pattern = Pattern.compile("(?<=\\{MetaInfoParagraph: numOfParagraph = )(.*?)(?=\\})");
-        Matcher matcher = pattern.matcher(meta);
-
-        if (matcher.find()) {
-            return Integer.parseInt(matcher.group(0));
-        }
-        throw new RuntimeException();
     }
 
     private String getBlockTextWithMeta() {
@@ -123,7 +108,7 @@ public class ParagraphsBlock implements BodyBlock {
 
             sb.append(paragraph.getText());
 
-            sb.append(String.format("{MetaInfoParagraph: numOfParagraph = %d}", i));
+            sb.append(createParagraphMetaInfoText(i));
 
             if (i != paragraphsToTransform.size() - 1) {
                 sb.append("${'\\n'}");
