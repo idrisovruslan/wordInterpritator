@@ -46,7 +46,7 @@ public class ParagraphForTransform {
         textByRunsList.add(new TextByRuns(paragraph, processedTexts.get(processedTexts.size() - 1)));
 
         for (int i = 0; i < processedTexts.size() - 1; i++) {
-            //TODO вынестри объект MetaInfoParagraph
+            //TODO вынестри объект MetaInfoRun
             if (processedTexts.get(i).replaceAll("\\{MetaInfoRun: .*?}", "").isEmpty()) {
                 continue;
             }

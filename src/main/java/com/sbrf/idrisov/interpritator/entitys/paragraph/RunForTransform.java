@@ -23,7 +23,7 @@ public class RunForTransform {
     }
 
     public static Integer getNumOfRunFromText(String textWithMeta) {
-        //TODO вынестри объект MetaInfoParagraph
+        //TODO вынестри объект MetaInfoRun
         Pattern runPattern = Pattern.compile("\\{MetaInfoRun: .*?}$");
         Matcher runMatcher = runPattern.matcher(textWithMeta);
 
@@ -35,7 +35,7 @@ public class RunForTransform {
     }
 
     public static Integer getNumOfRunFromMeta(String meta) {
-        //TODO вынестри объект MetaInfoParagraph
+        //TODO вынестри объект MetaInfoRun
         Pattern pattern = Pattern.compile("(?<=\\{MetaInfoRun: numOfRun = )(.*?)(?=\\})");
         Matcher matcher = pattern.matcher(meta);
 

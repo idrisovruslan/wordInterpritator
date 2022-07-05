@@ -21,7 +21,7 @@ public class TextByRuns {
     public TextByRuns(XWPFParagraph paragraph, String paragraphText) {
 
         Set<RunForTransform> runTexts = new HashSet<>();
-        //TODO вынестри объект MetaInfoParagraph
+        //TODO вынестри объект MetaInfoRun
         Pattern pattern = Pattern.compile(".*?\\{MetaInfoRun: .*?}");
         Matcher matcher = pattern.matcher(paragraphText);
 
