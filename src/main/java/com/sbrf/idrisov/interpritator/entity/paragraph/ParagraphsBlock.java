@@ -72,24 +72,27 @@ public class ParagraphsBlock implements BodyBlock {
 
             if (containsParagraphMetaInfo(paragraphText)) {
                 String processedText = removeParagraphMetaInfo(paragraphText);
+                int serialNumberOfParagraph = getSerialNumberOfParagraphFromParagraphText(paragraphText);
 
                 ArrayList<String> texts;
                 if (tempTexts.isEmpty()) {
                     texts = new ArrayList<>();
                     texts.add(processedText);
                 } else {
+                    //TODO баг(не text + processedText, а text + runMetaInfo from processedText)
                     texts = tempTexts.stream().map(text -> text + processedText).collect(Collectors.toCollection(ArrayList::new));
                     tempTexts = new ArrayList<>();
                     texts.add(processedText);
                 }
 
-                if (paragraphToTextsMap.containsKey(getSerialNumberOfParagraphFromParagraphText(paragraphText))) {
-                    paragraphToTextsMap.get(getSerialNumberOfParagraphFromParagraphText(paragraphText)).addAll(texts);
+                if (paragraphToTextsMap.containsKey(serialNumberOfParagraph)) {
+                    paragraphToTextsMap.get(serialNumberOfParagraph).addAll(texts);
                 } else {
-                    paragraphToTextsMap.put(getSerialNumberOfParagraphFromParagraphText(paragraphText), texts);
+                    paragraphToTextsMap.put(serialNumberOfParagraph, texts);
                 }
             } else {
-                //Если пусто, значит мета инфы нет(это возможно например при дерективе list) тогда мету берем из следующего пункта с текстом
+                //Если пусто, значит мета инфы нет(это возможно если в моделе есть переводы строки у параметра)
+                // тогда мету берем из следующего пункта с текстом
                 tempTexts.add(paragraphsTexts[i]);
             }
 
