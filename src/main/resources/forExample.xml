@@ -1,0 +1,42 @@
+<model>
+	<varPayVoz>единовременная_уплата_вознаграждения</varPayVoz>
+	<stavkaVoz>10</stavkaVoz>
+	<summGar>1000000</summGar>
+	<raschetniyRazVoz>10</raschetniyRazVoz>
+	<minRazVoz>5</minRazVoz>
+	<elAgreementForm>false</elAgreementForm>
+
+	<productType>ФТС</productType>
+	<accountList>
+		<acct>
+			<idAccount>1</idAccount>
+			<account>
+				<typeAccount>Основной</typeAccount>
+				<currencyAccount>rub</currencyAccount>
+				<numberAccount>1234567891234567</numberAccount>
+			</account>
+		</acct>
+		<acct>
+			<idAccount>2</idAccount>
+			<account>
+				<typeAccount>Второй основной</typeAccount>
+				<currencyAccount>eu</currencyAccount>
+				<numberAccount>0987654321098765</numberAccount>
+			</account>
+			<account>
+				<typeAccount>Супер-счёт</typeAccount>
+				<currencyAccount>uani</currencyAccount>
+				<numberAccount>1029384756102938</numberAccount>
+			</account>
+		</acct>
+		<acct>
+			<idAccount>3</idAccount>
+			<account>
+				<typeAccount>1000 дней без процентов</typeAccount>
+				<currencyAccount>деревянные</currencyAccount>
+				<numberAccount>0000000000000000</numberAccount>
+			</account>
+		</acct>
+	</accountList>
+	<numberGar>7777755555</numberGar>
+</model>

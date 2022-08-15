@@ -27,9 +27,9 @@ public class Main implements CommandLineRunner {
     }
 
     public void run(java.lang.String... args) throws Exception {
-        File  sourceDocxFile = new File("src/main/resources/mock2.docx");
+        File  sourceDocxFile = new File("src/main/resources/forExample.docx");
         Map<String, Object> objectMap = new HashMap<>();
-        objectMap.put("fileName", freemarker.ext.dom.NodeModel.parse(new File("src/main/resources/mockSource2.xml")));
+        objectMap.put("fileName", freemarker.ext.dom.NodeModel.parse(new File("src/main/resources/forExample.xml")));
 
         XWPFDocument document = documentTransformerService.generate(objectMap, sourceDocxFile);
 
